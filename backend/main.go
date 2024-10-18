@@ -20,6 +20,18 @@ const (
 	`
 )
 
+const (
+	//スレッドテーブル作成SQL
+	createThreadTable = `
+		CREATE TABLE IF NOT EXISTS threads(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL,
+			created_at TEXT NOT NULL,
+			owner_id TEXT NOT NULL
+		)
+	`
+)
+
 func init(){
 	db, err := sql.Open("sqlite3","./database.db")
 	if err != nil{
@@ -41,6 +53,12 @@ func main(){
 
 	/*テーブル作成*/
 	_, err = db.Exec(createUserTable)
+	if err != nil {
+		panic(err)
+	}
+
+	//テーブル作成（スレッド）
+	_, err = db.Exec(createThreadTable)
 	if err != nil {
 		panic(err)
 	}
