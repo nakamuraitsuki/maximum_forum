@@ -67,3 +67,24 @@ func main(){
 	fmt.Println("http://localhost:8080 でサーバーを起動します")
 	http.ListenAndServe(":8080", nil)
 }
+
+/*CORS設定ミドルウェア*/
+/*httpハンドラーを受け取って，CORS設定をした状態で返す．*/
+/*ルーティングの際に使います*/
+func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// レスポンスヘッダーの設定
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+		// リクエストヘッダーの設定
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		// ハンドラーの実行
+		h(w, r)
+	}
+}
