@@ -2,11 +2,12 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
-	_"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -120,4 +121,13 @@ func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
 		// ハンドラーの実行
 		h(w, r)
 	}
+}
+//JSONをデコードする関数
+func decodeBody(r *http.Request, v interface{}) error {
+	defer r.Body.Close()
+	if err := json.NewDecoder(r.Body).Decode(v);
+	err != nil {
+		return err
+	}
+	return nil
 }
