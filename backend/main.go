@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -100,6 +101,23 @@ func main(){
 	http.ListenAndServe(":8080", nil)
 }
 
+func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
+	var comment Comment
+	if err := decodeBody(r, &comment); err != nil{
+		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	now := time.Now()
+
+	_, err := db.Exec(addComment, comment.Message, now)
+	if err != nil{
+        responseJSON(w, http.StatusInternalServerError, "Failed to add comment")
+        return
+	}
+
+	responseJSON(w, http.StatusCreated, "Comment created successfully")
+}
 /*
 	CORS設定ミドルウェア
 	httpハンドラーを受け取って，CORS設定をした状態で返す
