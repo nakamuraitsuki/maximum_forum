@@ -30,6 +30,16 @@ const (
 			owner_id TEXT NOT NULL
 		)
 	`
+
+	createCommentTable = `
+		CREATE TABLE IF NOT EXISTS comments(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			thread_id INTEGER NOT NULL,
+			message TEXT NOT NULL,
+			created_at TEXT NOT NULL,
+		)
+	`
 )
 
 // ユーザー情報を格納する構造体
