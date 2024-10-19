@@ -9,8 +9,8 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
-// ユーザーテーブル作成SQL
 const (
+	//ユーザーテーブル作成SQL
 	createUserTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,10 +18,7 @@ const (
 			pw_hash TEXT NOT NULL
 		)
 	`
-)
-
-//スレッドテーブル作成SQL
-const (
+	//スレッドテーブル作成SQL
 	createThreadTable = `
 		CREATE TABLE IF NOT EXISTS threads(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,17 +27,21 @@ const (
 			owner_id TEXT NOT NULL
 		)
 	`
-
+	//コメントテーブル作成SQL
 	createCommentTable = `
-		CREATE TABLE IF NOT EXISTS comments(
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			user_id INTEGER NOT NULL,
-			thread_id INTEGER NOT NULL,
-			message TEXT NOT NULL,
-			created_at TEXT NOT NULL,
-		)
-	`
+	CREATE TABLE IF NOT EXISTS comments(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		thread_id INTEGER NOT NULL,
+		message TEXT NOT NULL,
+		created_at TEXT NOT NULL,
+	)
+`
+	//コメント追加SQL
+	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 )
+
+
 
 // ユーザー情報を格納する構造体
 type User struct {
@@ -85,6 +86,12 @@ func main(){
 
 	// テーブル作成（スレッド）
 	_, err = db.Exec(createThreadTable)
+	if err != nil {
+		panic(err)
+	}
+
+	//デーブル作成（コメント）
+	_, err = db.Exec(createCommentTable)
 	if err != nil {
 		panic(err)
 	}
