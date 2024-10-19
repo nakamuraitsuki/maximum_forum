@@ -40,11 +40,12 @@ type User struct {
 }
 
 // コメント情報を格納する構造体
-type Thread struct {
+type Comment struct {
 	ID int `json:"id"`
-	Name string `json:"name"`
+	UserID int `json:"user_id"`
+	ThreadID int `json:"thread_id"`
+	Message string `json:"message"`
 	CreatedAt string `json:"created_at"`
-	OwnerID string `json:"owner_id"`
 }
 
 func init(){
