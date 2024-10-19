@@ -29,19 +29,17 @@ const (
 	`
 	//コメントテーブル作成SQL
 	createCommentTable = `
-	CREATE TABLE IF NOT EXISTS comments(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER NOT NULL,
-		thread_id INTEGER NOT NULL,
-		message TEXT NOT NULL,
-		created_at TEXT NOT NULL
-	)
-`
+		CREATE TABLE IF NOT EXISTS comments(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			thread_id INTEGER NOT NULL,
+			message TEXT NOT NULL,
+			created_at TEXT NOT NULL
+		)
+	`
 	//コメント追加SQL
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 )
-
-
 
 // ユーザー情報を格納する構造体
 type User struct {
