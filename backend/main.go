@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	/*ユーザーテーブル作成SQL*/
+	//ユーザーテーブル作成SQL
 	createUserTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,9 +18,6 @@ const (
 			pw_hash TEXT NOT NULL
 		)
 	`
-)
-
-const (
 	//スレッドテーブル作成SQL
 	createThreadTable = `
 		CREATE TABLE IF NOT EXISTS threads(
@@ -30,6 +27,8 @@ const (
 			owner_id TEXT NOT NULL
 		)
 	`
+	//コメント追加SQL
+	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 )
 
 func init(){
