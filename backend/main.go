@@ -9,7 +9,6 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
-
 const (
 	//ユーザーテーブル作成SQL
 	createUserTable = `
@@ -26,6 +25,16 @@ const (
 			name TEXT NOT NULL,
 			created_at TEXT NOT NULL,
 			owner_id TEXT NOT NULL
+		)
+	`
+	//コメントテーブル作成SQL
+	createCommentTable = `
+		CREATE TABLE IF NOT EXISTS comments(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			thread_id INTEGER NOT NULL,
+			message TEXT NOT NULL,
+			created_at TEXT NOT NULL
 		)
 	`
 	//コメント追加SQL
@@ -75,6 +84,12 @@ func main(){
 
 	// テーブル作成（スレッド）
 	_, err = db.Exec(createThreadTable)
+	if err != nil {
+		panic(err)
+	}
+
+	//デーブル作成（コメント）
+	_, err = db.Exec(createCommentTable)
 	if err != nil {
 		panic(err)
 	}
