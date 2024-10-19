@@ -9,11 +9,9 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
-// ユーザーテーブル作成SQL
+
 const (
-
 	//ユーザーテーブル作成SQL
-
 	createUserTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,9 +19,7 @@ const (
 			pw_hash TEXT NOT NULL
 		)
 	`
-
 	//スレッドテーブル作成SQL
-
 	createThreadTable = `
 		CREATE TABLE IF NOT EXISTS threads(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
