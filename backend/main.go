@@ -9,8 +9,8 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
+// ユーザーテーブル作成SQL
 const (
-	/*ユーザーテーブル作成SQL*/
 	createUserTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,8 +20,8 @@ const (
 	`
 )
 
+//スレッドテーブル作成SQL
 const (
-	//スレッドテーブル作成SQL
 	createThreadTable = `
 		CREATE TABLE IF NOT EXISTS threads(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +58,7 @@ func init(){
 }
 
 func main(){
-	/*データベース接続*/
+	// データベース接続
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
 		log.Fatal(err)
@@ -66,13 +66,13 @@ func main(){
 	}
 	defer db.Close()
 
-	/*テーブル作成*/
+	// テーブル作成
 	_, err = db.Exec(createUserTable)
 	if err != nil {
 		panic(err)
 	}
 
-	//テーブル作成（スレッド）
+	// テーブル作成（スレッド）
 	_, err = db.Exec(createThreadTable)
 	if err != nil {
 		panic(err)
@@ -83,9 +83,11 @@ func main(){
 	http.ListenAndServe(":8080", nil)
 }
 
-/*CORS設定ミドルウェア*/
-/*httpハンドラーを受け取って，CORS設定をした状態で返す．*/
-/*ルーティングの際に使います*/
+/*
+	CORS設定ミドルウェア
+	httpハンドラーを受け取って，CORS設定をした状態で返す
+	ルーティングの際に使います
+*/
 func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// レスポンスヘッダーの設定
