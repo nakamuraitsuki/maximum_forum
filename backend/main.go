@@ -96,6 +96,12 @@ func main(){
 		panic(err)
 	}
 
+	http.HandleFunc("/api/comments", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+		switch r.Method{
+		case http.MethodPost:
+			createComment(w, r, db)
+		}
+	}))
 	// サーバーの起動、ポート番号は8080
 	fmt.Println("http://localhost:8080 でサーバーを起動します")
 	http.ListenAndServe(":8080", nil)
