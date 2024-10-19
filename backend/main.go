@@ -34,7 +34,7 @@ const (
 		user_id INTEGER NOT NULL,
 		thread_id INTEGER NOT NULL,
 		message TEXT NOT NULL,
-		created_at TEXT NOT NULL,
+		created_at TEXT NOT NULL
 	)
 `
 	//コメント追加SQL
