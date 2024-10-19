@@ -9,8 +9,9 @@ import (
 	_"github.com/mattn/go-sqlite3"
 )
 
-// ユーザーテーブル作成SQL
+
 const (
+	//ユーザーテーブル作成SQL
 	createUserTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,10 +19,7 @@ const (
 			pw_hash TEXT NOT NULL
 		)
 	`
-)
-
-//スレッドテーブル作成SQL
-const (
+	//スレッドテーブル作成SQL
 	createThreadTable = `
 		CREATE TABLE IF NOT EXISTS threads(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +28,8 @@ const (
 			owner_id TEXT NOT NULL
 		)
 	`
+	//コメント追加SQL
+	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 )
 
 // ユーザー情報を格納する構造体
