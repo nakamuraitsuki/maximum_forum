@@ -32,6 +32,21 @@ const (
 	`
 )
 
+// ユーザー情報を格納する構造体
+type User struct {
+	ID int `json:"id"`
+	Name string `json:"name"`
+	PwHash string `json:"pw_hash"`
+}
+
+// コメント情報を格納する構造体
+type Thread struct {
+	ID int `json:"id"`
+	Name string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	OwnerID string `json:"owner_id"`
+}
+
 func init(){
 	db, err := sql.Open("sqlite3","./database.db")
 	if err != nil{
