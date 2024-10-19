@@ -115,8 +115,8 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	}
 
 	now := time.Now()
-
-	_, err := db.Exec(addComment, comment.Message, now)
+	//ユーザー１，スレッド１の想定
+	_, err := db.Exec(addComment, 1, 1, comment.Message, now)
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add comment")
         return
