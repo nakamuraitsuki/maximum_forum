@@ -41,6 +41,8 @@ const (
 	`
 	//コメント追加SQL
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
+	//コメント取得SQL
+	getComments = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
 )
 
 // ユーザー情報を格納する構造体
@@ -106,7 +108,7 @@ func main(){
 	fmt.Println("http://localhost:8080 でサーバーを起動します")
 	http.ListenAndServe(":8080", nil)
 }
-
+//コメント追加ハンドラ
 func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	var comment Comment
 	if err := decodeBody(r, &comment); err != nil{
