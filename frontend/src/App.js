@@ -1,4 +1,5 @@
 import './App.css';
+import {useState} from 'react'
 
 function App() {
   const [message, setMessage] = useState('');
@@ -33,7 +34,7 @@ function App() {
           <p>{message}</p>
         </div>
       )}
-    </div>//<div>終わり
+    </div>
   );
 }
 
