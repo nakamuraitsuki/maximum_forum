@@ -22,18 +22,9 @@ function App() {
           value={message} 
           onChange={(e) => setMessage(e.target.value)} // 入力が変更されたときにstateを更新
           required
-        /><br /><br />
-
+        />
         <button type="submit">投稿</button> 
       </form>
-
-      {submitted && (
-        <div>
-          <h2>投稿が完了しました</h2>
-          <p><strong>匿名</strong> さんのメッセージ:</p>
-          <p>{message}</p>
-        </div>
-      )}
     </div>
   );
 }
