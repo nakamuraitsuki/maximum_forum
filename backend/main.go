@@ -41,6 +41,8 @@ const (
 	`
 	//コメント追加SQL
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
+	//コメント取得SQL
+	getCommentsquery = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
 )
 
 // ユーザー情報を格納する構造体
@@ -100,13 +102,16 @@ func main(){
 		switch r.Method{
 		case http.MethodPost:
 			createComment(w, r, db)
+		case http.MethodGet:
+			getComments(w, r, db)
 		}
+		
 	}))
 	// サーバーの起動、ポート番号は8080
 	fmt.Println("http://localhost:8080 でサーバーを起動します")
 	http.ListenAndServe(":8080", nil)
 }
-
+//コメント追加ハンドラ
 func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	var comment Comment
 	if err := decodeBody(r, &comment); err != nil{
@@ -123,6 +128,27 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	}
 
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
+}
+//コメント取得ハンドラ
+func getComments(w http.ResponseWriter, _ *http.Request, db *sql.DB){
+	//スレッド１の投稿を取ってくる
+	rows, err := db.Query(getCommentsquery,1)
+	if err != nil{
+		panic(err)
+	}
+
+	var comments []Comment
+
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.ID, &comment.UserID, &comment.ThreadID, &comment.Message, &comment.CreatedAt)
+		if err != nil {
+			panic(err)
+		}
+		comments = append(comments,comment)
+	}
+
+	responseJSON(w, http.StatusOK, comments)
 }
 /*
 	CORS設定ミドルウェア
