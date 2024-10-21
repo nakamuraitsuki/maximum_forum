@@ -2,11 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
-	_"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -94,11 +96,34 @@ func main(){
 		panic(err)
 	}
 
+	http.HandleFunc("/api/comments", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+		switch r.Method{
+		case http.MethodPost:
+			createComment(w, r, db)
+		}
+	}))
 	// サーバーの起動、ポート番号は8080
 	fmt.Println("http://localhost:8080 でサーバーを起動します")
 	http.ListenAndServe(":8080", nil)
 }
 
+func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
+	var comment Comment
+	if err := decodeBody(r, &comment); err != nil{
+		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	now := time.Now()
+	//ユーザー１，スレッド１の想定
+	_, err := db.Exec(addComment, 1, 1, comment.Message, now)
+	if err != nil{
+        responseJSON(w, http.StatusInternalServerError, "Failed to add comment")
+        return
+	}
+
+	responseJSON(w, http.StatusCreated, "Comment created successfully")
+}
 /*
 	CORS設定ミドルウェア
 	httpハンドラーを受け取って，CORS設定をした状態で返す
@@ -119,5 +144,22 @@ func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
 
 		// ハンドラーの実行
 		h(w, r)
+	}
+}
+//JSONをデコードする関数
+func decodeBody(r *http.Request, v interface{}) error {
+	defer r.Body.Close()
+	if err := json.NewDecoder(r.Body).Decode(v);
+	err != nil {
+		return err
+	}
+	return nil
+}
+//JSONにエンコードして返す
+func responseJSON(w http.ResponseWriter, status int, payload interface{}){
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		panic(err)
 	}
 }
