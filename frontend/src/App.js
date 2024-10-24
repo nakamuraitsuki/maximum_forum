@@ -1,6 +1,9 @@
 import './App.css';
+import { useState } from 'react'
 
 function App() {
+  const [message, setMessage] = useState('');
+
   // メッセージを投稿する関数
   const postMessage = async (message) => {
     try {
@@ -24,18 +27,21 @@ function App() {
     }
   };  
 
+  // フォーム送信時の処理
+  const handleSubmit = (event) => {
+    event.preventDefault(); // ページのリロードを防ぐ
+    postMessage(message); // メッセージを投稿
+    setMessage(''); // メッセージをリセット
+  };
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const message = e.target.elements.message.value;
-          e.target.elements.message.value = '';
-          await postMessage(message);
-        }}
-      >
-        <input type="text" required name="message" />
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="コメントを入力してください"
+        ></textarea>
         <button type="submit">投稿</button>
       </form>
     </div>
