@@ -13,12 +13,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          user_id: 1,
-          thread_id: 1,
-          message: message,
-          created_at: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ message: message }),
       });
   
       if (!response.ok) {
