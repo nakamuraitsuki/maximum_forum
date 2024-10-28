@@ -141,7 +141,7 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	}
 
 	now := time.Now()
-	_, err := db.Exec(addUser, user.name, user.pw_hash)
+	_, err := db.Exec(addUser, user.ID, user.Name, user.PwHash)
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add user")
         return
