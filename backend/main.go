@@ -44,7 +44,7 @@ const (
 	//コメント取得SQL
 	getCommentsquery = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
 	//ユーザーを追加SQL
-	addUser = "INSERT INTO users (id, name, pw_hash) VALUES (?, ?, ?, ?)"
+	addUser = "INSERT INTO users (id, name, pw_hash) VALUES (?, ?, ?)"
 )
 
 // ユーザー情報を格納する構造体
@@ -132,6 +132,16 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
 
+// パスワードの文字列のハッシュ化
+func encryptPassword(password string) (string, error) {
+	
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), nil
+}
+
 //ユーザー追加ハンドラ
 func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	var user User
@@ -140,8 +150,7 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 		return
 	}
 
-	now := time.Now()
-	_, err := db.Exec(addUser, user.name, user.pw_hash)
+	_, err := db.Exec(addUser, user.ID, user.Name, encryptPassword(user.PwHash))
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add user")
         return
