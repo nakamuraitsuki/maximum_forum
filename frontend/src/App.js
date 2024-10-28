@@ -16,7 +16,7 @@ function App() {
 
       const data = await response.json();
       console.log("コメント取得成功",data);
-      setComments(data);
+      if(data != null) setComments(data);
     } catch (error) {
       console.error(error.message);
     }
