@@ -43,6 +43,8 @@ const (
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 	//コメント取得SQL
 	getCommentsquery = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
+	//ユーザーを追加SQL
+	addUser = "INSERT INTO users (id, name, pw_hash) VALUES (?, ?, ?, ?)"
 )
 
 // ユーザー情報を格納する構造体
@@ -129,6 +131,25 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
+
+//ユーザー追加ハンドラ
+func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
+	var user User
+	if err := decodeBody(r, &user); err != nil{
+		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	now := time.Now()
+	_, err := db.Exec(addUser, user.name, user.pw_hash)
+	if err != nil{
+        responseJSON(w, http.StatusInternalServerError, "Failed to add user")
+        return
+	}
+
+	responseJSON(w, http.StatusCreated, "User created successfully")
+}
+
 //コメント取得ハンドラ
 func getComments(w http.ResponseWriter, _ *http.Request, db *sql.DB){
 	//スレッド１の投稿を取ってくる
