@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"bcrypt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -43,8 +44,8 @@ const (
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 	//コメント取得SQL
 	getCommentsquery = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
-	//ユーザーを追加SQL
-	addUser = "INSERT INTO users (id, name, pw_hash) VALUES (?, ?, ?)"
+	//ユーザー追加SQL
+	addUser = "INSERT INTO users (name, pw_hash) VALUES (?, ?)"
 )
 
 // ユーザー情報を格納する構造体
