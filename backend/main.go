@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"bcrypt"
+	"golang.org/x/crypto/bcrypt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -151,7 +151,7 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 		return
 	}
 
-	_, err := db.Exec(addUser, user.ID, user.Name, encryptPassword(user.PwHash))
+	_, err := db.Exec(addUser, user.Name, encryptPassword(user.PwHash))
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add user")
         return
