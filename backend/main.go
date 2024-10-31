@@ -133,16 +133,6 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
 
-// パスワードの文字列のハッシュ化
-func encryptPassword(password string) (string, error) {
-	
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), nil
-}
-
 //ユーザー追加ハンドラ
 func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 	var user User
@@ -151,7 +141,12 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 		return
 	}
 
-	_, err := db.Exec(addUser, user.Name, encryptPassword(user.PwHash))
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.PwHash), bcrypt.DefaultCost)
+	if err != nil {
+		
+	}
+
+	_, err := db.Exec(addUser, user.Name, hash)
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add user")
         return
