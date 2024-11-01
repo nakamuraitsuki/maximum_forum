@@ -1,66 +1,73 @@
-import './App.css';
-import { BrowserRouter } from 'react-router-dom';
-import { useState ,useEffect} from 'react'
+import "./App.css";
+import { Route, Routes, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
-  //コメントを受け取る配列
+
   const getComments = async () => {
-    const url = 'http://localhost:8080/api/comments';
-    try{
+    const url = "http://localhost:8080/api/comments";
+    try {
       const response = await fetch(url);
-      if(!response.ok) {
+      if (!response.ok) {
         throw new Error(`コメント取得エラー/status:${response.status}`);
       }
-
       const data = await response.json();
-      console.log("コメント取得成功",data);
-      if(data != null) setComments(data);
+      console.log("コメント取得成功", data);
+      if (data != null) setComments(data);
     } catch (error) {
       console.error(error.message);
     }
-  }
+  };
 
-  // メッセージを投稿する関数
   const postMessage = async (message) => {
     try {
-      const response = await fetch('http://localhost:8080/api/comments', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/api/comments", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ message: message }),
       });
-  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
       const data = await response.json();
-      console.log('コメントが投稿されました:', data);
-      setGetTrigger(prev => !prev);//投稿再取得トリガー
+      console.log("コメントが投稿されました:", data);
+      setGetTrigger((prev) => !prev);
       return data;
     } catch (error) {
-      console.error('Fetchエラーが発生しました:', error);
+      console.error("Fetchエラーが発生しました:", error);
     }
-  };  
-
-  // フォーム送信時の処理
-  const handleSubmit = (event) => {
-    event.preventDefault(); // ページのリロードを防ぐ
-    postMessage(message); // メッセージを投稿
-    setMessage(''); // メッセージをリセット
   };
-  //読み込み時，投稿時にコメントを取得する
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    postMessage(message);
+    setMessage("");
+  };
+
   useEffect(() => {
     getComments();
-  },[getTrigger]);
+  }, [getTrigger]);
 
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
+      <nav>
+        <Link to="/login">ログイン</Link>
+        <Link to="/register">新規登録</Link>
+      </nav>
+      
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+
       <div>
         {comments.map((comment) => (
           <div key={comment.id}>
@@ -68,6 +75,7 @@ function App() {
           </div>
         ))}
       </div>
+
       <form onSubmit={handleSubmit}>
         <textarea
           value={message}
