@@ -141,12 +141,12 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.PwHash), bcrypt.DefaultCost)
+	hash, err = bcrypt.GenerateFromPassword([]byte(user.PwHash), bcrypt.DefaultCost)
 	if err != nil {
 		
 	}
 
-	_, err := db.Exec(addUser, user.Name, hash)
+	_, err = db.Exec(addUser, user.Name, hash)
 	if err != nil{
         responseJSON(w, http.StatusInternalServerError, "Failed to add user")
         return
