@@ -143,7 +143,8 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
 
 	hash, err = bcrypt.GenerateFromPassword([]byte(user.PwHash), bcrypt.DefaultCost)
 	if err != nil {
-		
+		responseJSON(w, http.StatusInternalServerError, "Failed to convert password")
+		return
 	}
 
 	_, err = db.Exec(addUser, user.Name, hash)
