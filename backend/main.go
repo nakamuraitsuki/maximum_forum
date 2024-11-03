@@ -104,8 +104,6 @@ func main() {
 		switch r.Method {
 		case http.MethodPost:
 			createUser(w, r, db)
-		case http.MethodGet:
-			getUsers(w, r, db)
 		}
 	}))
 
@@ -224,25 +222,6 @@ func validateJWT(r *http.Request) (*jwt.MapClaims, error) {
 	}
 
 	return claims, nil
-}
-
-func getUsers(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
-	rows, err := db.Query("SELECT * FROM users")
-	if err != nil {
-		panic(err)
-	}
-
-	var users []User
-	for rows.Next() {
-		var user User
-		err := rows.Scan(&user.ID, &user.Name, &user.PwHash)
-		if err != nil {
-			panic(err)
-		}
-		users = append(users, user)
-	}
-
-	responseJSON(w, http.StatusOK, users)
 }
 
 func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
