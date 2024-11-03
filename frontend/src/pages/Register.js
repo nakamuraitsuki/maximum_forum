@@ -3,33 +3,56 @@ import { useState } from "react";
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  // localhost:8080/api/usersにPOSTリクエストを送信して、新しいユーザーを登録する
-  const postUser = async (username, password) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: username,
-          pw_hash: password
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  const postUser = (username, password) => {
+    fetch("http://localhost:8080/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: username,
+        pw_hash: password,
+      }),
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((data) => {
+          console.log("ユーザー登録成功:", data);
+          window.location.href = "/login";
+        });
+      } else {
+        if (response.status === 409) {
+          setError("ユーザー名が既に使用されています");
+        } else {
+          setError("ユーザー登録エラーが発生しました");
+        }
       }
-      const data = await response.json();
-      console.log("新しいユーザーが登録されました:", data);
-      return data;
-    } catch (error) {
-      console.error("Fetchエラーが発生しました:", error);
+    });
+  };
+
+  // ユーザー名とパスワードの文字数を確認する関数
+  const checkForms = () => {
+    if (username.length < 3 || username.length > 20) {
+      setError("ユーザー名は3文字以上20文字以下である必要があります");
+      return 0;
     }
+    if (password.length < 8 || password.length > 16) {
+      setError("パスワードは8文字以上16文字以下である必要があります");
+      return 0;
+    } else if (!password.match(/^[0-9a-zA-Z]+$/)) {
+      setError("パスワードは半角英数字である必要があります");
+      return 0;
+    }
+    return 1;
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // checkForms()が0を返す場合は、処理を中断する
+    if (checkForms() === 0) {
+      return;
+    }
     postUser(username, password);
     setUsername("");
     setPassword("");
@@ -39,6 +62,7 @@ export default function Register() {
     <div>
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <input
           type="text"
           placeholder="Username"

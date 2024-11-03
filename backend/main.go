@@ -102,6 +102,8 @@ func main() {
 		switch r.Method {
 		case http.MethodPost:
 			createUser(w, r, db)
+		case http.MethodGet:
+			getUsers(w, r, db)
 		}
 	}))
 
@@ -131,6 +133,15 @@ func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var user User
 	if err := decodeBody(r, &user); err != nil {
 		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// ユーザー名の重複チェック
+	row := db.QueryRow("SELECT * FROM users WHERE name = ?", user.Name)
+	var dbUser User
+	err := row.Scan(&dbUser.ID, &dbUser.Name, &dbUser.PwHash)
+	if err == nil {
+		responseJSON(w, http.StatusConflict, "User already exists")
 		return
 	}
 
@@ -174,6 +185,27 @@ func login(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	responseJSON(w, http.StatusOK, "Login successful")
+}
+
+// ユーザー取得ハンドラ
+func getUsers(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
+	rows, err := db.Query("SELECT * FROM users")
+	if err != nil {
+		panic(err)
+	}
+
+	var users []User
+
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Name, &user.PwHash)
+		if err != nil {
+			panic(err)
+		}
+		users = append(users, user)
+	}
+
+	responseJSON(w, http.StatusOK, users)
 }
 
 // コメント追加ハンドラ
