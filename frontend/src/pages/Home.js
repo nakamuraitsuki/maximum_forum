@@ -113,7 +113,8 @@ function Home() {
         {comments.map((comment) => (
           <div key={comment.id}>
             <p>
-              {comment.name}:{comment.message} {new Date(comment.created_at).toLocaleString()}
+              {comment.name}:{comment.message}{" "}
+              {new Date(comment.created_at).toLocaleString()}
             </p>
           </div>
         ))}
