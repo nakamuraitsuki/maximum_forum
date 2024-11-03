@@ -99,7 +99,6 @@ function Home() {
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
-
       {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
       <nav>
         <Link to="/register">新規登録</Link>
@@ -114,7 +113,7 @@ function Home() {
         {comments.map((comment) => (
           <div key={comment.id}>
             <p>
-              {comment.name}:{comment.message} ({comment.created_at})
+              {comment.name}:{comment.message} {new Date(comment.created_at).toLocaleString()}
             </p>
           </div>
         ))}
@@ -125,6 +124,7 @@ function Home() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="コメントを入力してください"
+          required
         ></textarea>
         <button type="submit">投稿</button>
       </form>
