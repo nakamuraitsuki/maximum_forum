@@ -3,29 +3,33 @@ import { useState } from "react";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  // localhost:8080/api/loginにPOSTリクエストを送信して、ログインする
-  const postLogin = async (username, password) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: username,
-          pw_hash: password,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  const postLogin = (username, password) => {
+    fetch("http://localhost:8080/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: username,
+        pw_hash: password,
+      }),
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then((data) => {
+          console.log("ログイン成功:", data);
+          localStorage.setItem("token", data.token);
+          window.location.href = "/";
+        });
+      } else {
+        if(response.status === 401) {
+          setError("ユーザー名またはパスワードが間違っています");
+        } else {
+          setError("ログインエラーが発生しました");
+        }
       }
-      const data = await response.json();
-      console.log("ログイン成功:", data);
-      return data;
-    } catch (error) {
-      console.error("Fetchエラーが発生しました:", error);
-    }
+    });
   };
 
   const handleSubmit = (event) => {
@@ -33,12 +37,13 @@ export default function Login() {
     postLogin(username, password);
     setUsername("");
     setPassword("");
-  }
+  };
 
   return (
     <div>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <input
           type="text"
           placeholder="Username"
