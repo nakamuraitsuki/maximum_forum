@@ -18,6 +18,17 @@ function Home() {
     }
   };
 
+  // JWTトークンからユーザーIDを取得する関数
+  const getUserIdFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.user_id;
+    } catch (error) {
+      console.error("トークンからユーザーIDを取得できませんでした:", error);
+      return "";
+    }
+  };
+
   useEffect(() => {
     // トークンが存在する場合、ユーザー名を取得してセット
     const token = localStorage.getItem("token");
@@ -44,6 +55,7 @@ function Home() {
 
   const postMessage = async (message) => {
     const token = localStorage.getItem("token"); // トークンを取得
+    const userId = getUserIdFromToken(token); // ユーザーIDを取得
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");
@@ -57,7 +69,10 @@ function Home() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
-        body: JSON.stringify({ message: message }),
+        body: JSON.stringify({
+          user_id: userId,
+          message: message,
+        }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -85,6 +100,7 @@ function Home() {
     <div className="App">
       <h1>Maximum掲示板</h1>
 
+      {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
       <nav>
         <Link to="/register">新規登録</Link>
         {loggedInUser ? (
@@ -92,13 +108,14 @@ function Home() {
         ) : (
           <Link to="/login">ログイン</Link>
         )}
-        {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
       </nav>
 
       <div>
         {comments.map((comment) => (
           <div key={comment.id}>
-            <p>{comment.message}</p>
+            <p>
+              {comment.name}:{comment.message} ({comment.created_at})
+            </p>
           </div>
         ))}
       </div>
