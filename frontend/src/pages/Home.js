@@ -5,6 +5,27 @@ function Home() {
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState("");
+
+  // JWTトークンからユーザー名を取得する関数
+  const getUsernameFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.name;
+    } catch (error) {
+      console.error("トークンからユーザー名を取得できませんでした:", error);
+      return "";
+    }
+  };
+
+  useEffect(() => {
+    // トークンが存在する場合、ユーザー名を取得してセット
+    const token = localStorage.getItem("token");
+    if (token) {
+      const name = getUsernameFromToken(token);
+      setLoggedInUser(name);
+    }
+  }, []);
 
   const getComments = async () => {
     const url = "http://localhost:8080/api/comments";
@@ -22,11 +43,19 @@ function Home() {
   };
 
   const postMessage = async (message) => {
+    const token = localStorage.getItem("token"); // トークンを取得
+
+    if (!token) {
+      console.error("トークンがありません。ログインが必要です。");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8080/api/comments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
         body: JSON.stringify({ message: message }),
       });
@@ -55,10 +84,17 @@ function Home() {
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
+
       <nav>
-        <Link to="/login">ログイン</Link>
         <Link to="/register">新規登録</Link>
+        {loggedInUser ? (
+          <Link to="/logout">ログアウト</Link>
+        ) : (
+          <Link to="/login">ログイン</Link>
+        )}
+        {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
       </nav>
+
       <div>
         {comments.map((comment) => (
           <div key={comment.id}>

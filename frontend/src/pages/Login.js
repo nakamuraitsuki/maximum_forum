@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Login() {
@@ -19,11 +20,11 @@ export default function Login() {
       if (response.ok) {
         response.json().then((data) => {
           console.log("ログイン成功:", data);
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("token", data.token); // トークンをlocalStorageに保存
           window.location.href = "/";
         });
       } else {
-        if(response.status === 401) {
+        if (response.status === 401) {
           setError("ユーザー名またはパスワードが間違っています");
         } else {
           setError("ログインエラーが発生しました");
@@ -41,7 +42,11 @@ export default function Login() {
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>ログイン</h1>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/register">新規登録</Link>
+      </nav>
       <form onSubmit={handleSubmit}>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <input
@@ -56,7 +61,7 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit">ログイン</button>
       </form>
     </div>
   );

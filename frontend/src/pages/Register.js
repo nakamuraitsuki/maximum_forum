@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Register() {
@@ -15,20 +16,33 @@ export default function Register() {
         name: username,
         pw_hash: password,
       }),
-    }).then((response) => {
-      if (response.ok) {
-        return response.json().then((data) => {
-          console.log("ユーザー登録成功:", data);
-          window.location.href = "/login";
-        });
-      } else {
-        if (response.status === 409) {
-          setError("ユーザー名が既に使用されています");
+    })
+      .then((response) => {
+        if (response.ok) {
+          // JSONレスポンスが存在するか確認
+          return response
+            .json()
+            .then((data) => {
+              console.log("ユーザー登録成功:", data);
+              window.location.href = "/login";
+            })
+            .catch(() => {
+              console.log("ユーザー登録成功（空のレスポンス）");
+              window.location.href = "/login";
+            });
         } else {
-          setError("ユーザー登録エラーが発生しました");
+          // エラーステータスに応じてエラーメッセージを設定
+          if (response.status === 409) {
+            setError("ユーザー名が既に使用されています");
+          } else {
+            setError("ユーザー登録エラーが発生しました");
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        console.error("登録中にエラーが発生しました:", error);
+        setError("サーバーエラーが発生しました");
+      });
   };
 
   // ユーザー名とパスワードの文字数を確認する関数
@@ -60,7 +74,11 @@ export default function Register() {
 
   return (
     <div>
-      <h1>Register</h1>
+      <h1>新規登録</h1>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/login">ログイン</Link>
+      </nav>
       <form onSubmit={handleSubmit}>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <input
@@ -75,7 +93,7 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Register</button>
+        <button type="submit">登録</button>
       </form>
     </div>
   );
