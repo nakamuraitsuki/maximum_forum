@@ -237,9 +237,8 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		responseJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
 	now := time.Now()
-	_, err = db.Exec(addComment, userID, 1, comment.Message, now)
+	_, err = db.Exec(addComment, userID, comment.ThreadID, comment.Message, now)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to add comment")
 		return

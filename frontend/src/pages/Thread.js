@@ -96,6 +96,7 @@ function Thread() {
         },
         body: JSON.stringify({
           user_id: userId,
+          thread_id: Number(thread_id),
           message: message,
         }),
       });
@@ -118,7 +119,6 @@ function Thread() {
   };
 
   useEffect(() => {
-    getThreadInfo();
     getComments();
   }, [getTrigger]);
 
