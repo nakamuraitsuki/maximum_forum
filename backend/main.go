@@ -69,6 +69,13 @@ type Comment struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type Thread struct {
+    ID        int    `json:"id"`
+    Name      string `json:"name"`
+    CreatedAt string `json:"created_at"`
+    OwnerID   string `json:"owner_id"`
+}
+
 func init() {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
