@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"golang.org/x/crypto/bcrypt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -43,6 +44,8 @@ const (
 	addComment = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
 	//コメント取得SQL
 	getCommentsquery = "SELECT * FROM comments WHERE thread_id = ? ORDER BY created_at DESC"
+	//ユーザー追加SQL
+	addUser = "INSERT INTO users (name, pw_hash) VALUES (?, ?)"
 )
 
 // ユーザー情報を格納する構造体
@@ -129,6 +132,30 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB){
 
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
+
+//ユーザー追加ハンドラ
+func createUser(w http.ResponseWriter, r *http.Request, db *sql.DB){
+	var user User
+	if err := decodeBody(r, &user); err != nil{
+		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.PwHash), bcrypt.DefaultCost)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to convert password")
+		return
+	}
+
+	_, err = db.Exec(addUser, user.Name, hash)
+	if err != nil{
+        responseJSON(w, http.StatusInternalServerError, "Failed to add user")
+        return
+	}
+
+	responseJSON(w, http.StatusCreated, "User created successfully")
+}
+
 //コメント取得ハンドラ
 func getComments(w http.ResponseWriter, _ *http.Request, db *sql.DB){
 	//スレッド１の投稿を取ってくる
