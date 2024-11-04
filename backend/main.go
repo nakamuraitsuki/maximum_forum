@@ -41,6 +41,7 @@ const (
 
 	addUser          = "INSERT INTO users (name, pw_hash) VALUES (?, ?)"
 	addComment       = "INSERT INTO comments (user_id, thread_id, message, created_at) VALUES (?, ?, ?, ?)"
+	addThread		 = "INSERT INTO threads (name, created_at, owner_id) VALUES (?, ?, ?)"
 	getCommentsQuery = `
 		SELECT comments.id, comments.message, comments.created_at, users.name
 		FROM comments
