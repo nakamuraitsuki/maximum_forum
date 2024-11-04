@@ -250,6 +250,7 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	thread_id := r.URL.Query().Get(("threadID"))
+	fmt.Println(thread_id);
 	rows, err := db.Query(getCommentsQuery, thread_id)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to retrieve comments")

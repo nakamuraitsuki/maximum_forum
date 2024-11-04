@@ -14,7 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/thread/*" element={<Thread/>} />
+        <Route path="/thread/:thread_id" element={<Thread/>} />
       </Routes>
     </BrowserRouter>
   );

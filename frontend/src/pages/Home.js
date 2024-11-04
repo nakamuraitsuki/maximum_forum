@@ -42,6 +42,7 @@ function Home() {
     }
   }, []);
 
+  //コメントを取得する関数
   const getComments = async () => {
     const url = "http://localhost:8080/api/comments";
     try {
