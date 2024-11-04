@@ -105,10 +105,10 @@ function Home() {
   }, [getTrigger]);
 
   return (
-    <div className="App">
+    <div className="home">
       <h1>Maximum掲示板</h1>
       {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
-      <nav>
+      <nav className="home-nav">
         <Link to="/register">新規登録</Link>
         {loggedInUser ? (
           <Link to="/logout">ログアウト</Link>
@@ -117,7 +117,7 @@ function Home() {
         )}
       </nav>
 
-      <div>
+      <div className="comments">
         {comments.map((comment) => (
           <div key={comment.id}>
             <p>
@@ -128,7 +128,7 @@ function Home() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="comment-form">
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
