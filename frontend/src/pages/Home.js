@@ -31,7 +31,11 @@ function Home() {
 
   useEffect(() => {
     // トークンが存在する場合、ユーザー名を取得してセット
-    const token = localStorage.getItem("token");
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
     if (token) {
       const name = getUsernameFromToken(token);
       setLoggedInUser(name);
@@ -54,7 +58,10 @@ function Home() {
   };
 
   const postMessage = async (message) => {
-    const token = localStorage.getItem("token"); // トークンを取得
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    ); // トークンを取得
     const userId = getUserIdFromToken(token); // ユーザーIDを取得
 
     if (!token) {

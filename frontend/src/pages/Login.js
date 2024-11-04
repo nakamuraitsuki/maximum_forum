@@ -20,7 +20,7 @@ export default function Login() {
       if (response.ok) {
         response.json().then((data) => {
           console.log("ログイン成功:", data);
-          localStorage.setItem("token", data.token); // トークンをlocalStorageに保存
+          document.cookie = `token=${data.token}; path=/`; // トークンをクッキーに保存
           window.location.href = "/";
         });
       } else {
