@@ -95,7 +95,6 @@ function Thread() {
           Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
         body: JSON.stringify({
-          user_id: userId,
           thread_id: Number(thread_id),
           message: message,
         }),

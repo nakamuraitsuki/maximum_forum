@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function Home() {
+  const [threadName, setThreadName] = useState("");
+  const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState("");
 
@@ -40,6 +42,66 @@ function Home() {
     }
   }, []);
 
+  const getThreads = async () => {
+    const url = "http://localhost:8080/api/threads";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`スレッド取得エラー/status:${response.status}`);
+      }
+      const data = await response.json();
+      console.log("スレッド取得成功", data);
+      if (data != null) setThreads(data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const postThread = async (threadName) => {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    ); // トークンを取得
+    const userId = getUserIdFromToken(token); // ユーザーIDを取得
+
+    if (!token) {
+      console.error("トークンがありません。ログインが必要です。");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/threads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 認証用のトークンを追加
+        },
+        body: JSON.stringify({
+          name: threadName
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("スレッド作成:", data);
+      setGetTrigger((prev) => !prev);
+      return data;
+    } catch (error) {
+      console.error("Fetchエラーが発生しました:", error);
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    postThread(threadName);
+    setThreadName("");
+  };
+
+  useEffect(() => {
+    getThreads();
+  }, [getTrigger]);
+
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
@@ -52,6 +114,27 @@ function Home() {
           <Link to="/login">ログイン</Link>
         )}
       </nav>
+      <div>
+        {threads.map((thread) => (
+          <div key={thread.id}>
+            <Link to={`/thread/${thread.id}`}>
+              <span>
+                {thread.name}{" "}
+                {new Date(thread.created_at).toLocaleString()}
+              </span>
+            </Link>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={threadName}
+          onChange={(e) => setThreadName(e.target.value)}
+          placeholder="スレッド名"
+          required
+        ></textarea>
+        <button type="submit">作成</button>
+      </form>
     </div>
   );
 }

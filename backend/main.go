@@ -265,6 +265,13 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	claims, err := validateJWT(r)
+	if err != nil {
+		responseJSON(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	userID := int((*claims)["user_id"].(float64))
 	//DBに込める値を受け取るための変数宣言
 	var thread Thread
 	//デコードする
@@ -273,10 +280,12 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	now := time.Now()
-	_, err := db.Exec(addThread, thread.Name, now, thread.OwnerID)
+	_, err = db.Exec(addThread, thread.Name, now, userID)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Faled to add thread")
 	}
+
+	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
 func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
