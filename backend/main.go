@@ -131,6 +131,13 @@ func main() {
 		}
 	}))
 
+	http.HandleFunc("api/threads", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+		switch r.Method {
+		case http.MethodPost:
+			createThread(w, r, db)
+		}
+	}))
+
 	fmt.Println("Server started at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
