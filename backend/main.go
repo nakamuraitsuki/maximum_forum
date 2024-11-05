@@ -255,6 +255,21 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
 
+func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	//DBに込める値を受け取るための変数宣言
+	var thread Thread
+	//デコードする
+	if err := decodeBody(r, &thread); err != nil {
+		responseJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	now := time.Now()
+	_, err := db.Exec(addThread, thread.Name, now, thread.OwnerID)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Faled to add thread")
+	}
+}
+
 func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	thread_id := r.URL.Query().Get(("threadID"))
 	fmt.Println(thread_id);
