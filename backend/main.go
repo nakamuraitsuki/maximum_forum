@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"strconv"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5" // go get github.com/golang-jwt/jwt/v5
 	_ "github.com/mattn/go-sqlite3"
@@ -137,6 +139,13 @@ func main() {
 			createThread(w, r, db)
 		case http.MethodGet:
 			getThreads(w, r, db)
+		}
+	}))
+
+	http.HandleFunc("/api/htreads/", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+		switch r.Method {
+		case http.MethodGet:
+			getThreadByID(w, r, db)
 		}
 	}))
 
@@ -324,7 +333,7 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 		var thread Thread
 		err := rows.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
 		if err != nil {
-			responseJSON(w, http.StatusInternalServerError, "Failed to parse thread data")
+			responseJSON(w, http.StatusInternalServerError, "Failed to parse threads data")
 			return
 		}
 		threads = append(threads, thread)
@@ -332,6 +341,31 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 
 	responseJSON(w, http.StatusOK, threads)
 }
+
+func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	var thread Thread
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/threads/")
+    threadID, err := strconv.Atoi(idStr)
+    if err != nil {
+        http.Error(w, "Invalid thread ID", http.StatusBadRequest)
+        return
+    }
+
+	row, err := db.Query("SELECT * FROM threads WHERE id=?",threadID)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to get thread by id")	
+	}
+	defer row.Close()
+
+	row.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to parse thread data")
+		return
+	}
+
+	responseJSON(w, http.StatusOK, thread)
+}
+
 func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
