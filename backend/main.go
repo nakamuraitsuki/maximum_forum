@@ -131,10 +131,12 @@ func main() {
 		}
 	}))
 
-	http.HandleFunc("api/threads", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/api/threads", HandleCORS(func(w http.ResponseWriter, r *http.Request){
 		switch r.Method {
 		case http.MethodPost:
 			createThread(w, r, db)
+		case http.MethodGet:
+			getThreads(w, r, db)
 		}
 	}))
 
@@ -301,6 +303,26 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusOK, comments)
 }
 
+func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
+	var threads []Thread
+	rows, err := db.Query("SELECT * FROM threads")
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var thread Thread
+		err := rows.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
+		if err != nil {
+			responseJSON(w, http.StatusInternalServerError, "Failed to parse thread data")
+			return
+		}
+		threads = append(threads, thread)
+	}
+
+	responseJSON(w, http.StatusOK, threads)
+}
 func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
