@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 function Thread() {
   const { thread_id } = useParams();
@@ -9,6 +9,8 @@ function Thread() {
   const [threadInfo, setThreadInfo] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState("");
+
+  const navigate = useNavigate();
 
   // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
@@ -65,6 +67,9 @@ function Thread() {
     try {
         const response = await fetch(url);
         if (!response.ok) {
+          if(response.status == 404) {
+            navigate("/NotFound");
+          }
           throw new Error(`スレッド取得エラー/status:${response.status}`);
         }
         const data = await response.json();
