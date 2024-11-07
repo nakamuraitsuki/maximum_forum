@@ -129,10 +129,10 @@ function Home() {
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
-      {loggedInUser && <p>{loggedInUser.name} さん、こんにちは！</p>}
+      {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
       <nav>
         <Link to="/register">新規登録</Link>
-        {loggedInUser ? (
+        {loggedInUser.id && loggedInUser.name ? (
           <Link to="/logout">ログアウト</Link>
         ) : (
           <Link to="/login">ログイン</Link>
