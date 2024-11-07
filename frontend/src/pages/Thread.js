@@ -124,7 +124,8 @@ function Thread() {
 
   return (
     <div className="App">
-      <h1>Maximum掲示板:スレッド{threadInfo.id}</h1>
+      <h1>Maximum掲示板</h1>
+      <h2>{threadInfo.name}</h2>
       {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
       <nav>
         <Link to="/register">新規登録</Link>
