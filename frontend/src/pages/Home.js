@@ -1,3 +1,4 @@
+import "./Home.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -128,10 +129,10 @@ function Home() {
   }, [getTrigger]);
 
   return (
-    <div className="App">
+    <div className="home">
       <h1>Maximum掲示板</h1>
       {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
-      <nav>
+      <nav className="home-nav">
         <Link to="/register">新規登録</Link>
         {loggedInUser.id && loggedInUser.name ? (
           <Link to="/logout">ログアウト</Link>
@@ -139,7 +140,7 @@ function Home() {
           <Link to="/login">ログイン</Link>
         )}
       </nav>
-      <div>
+      <div className="comments">
         {threads.map((thread) => (
           <div key={thread.id}>
             <Link to={`/thread/${thread.id}`}>
@@ -152,7 +153,7 @@ function Home() {
           </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="comment-form">
         <textarea
           value={threadName}
           onChange={(e) => setThreadName(e.target.value)}

@@ -1,3 +1,4 @@
+import "./Login.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -41,13 +42,13 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="login">
       <h1>ログイン</h1>
-      <nav>
+      <nav className="login-nav">
         <Link to="/">Home</Link>
         <Link to="/register">新規登録</Link>
       </nav>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="login-form">
         {error && <p style={{ color: "red" }}>{error}</p>}
         <input
           type="text"
