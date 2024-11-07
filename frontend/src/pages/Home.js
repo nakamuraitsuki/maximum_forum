@@ -123,6 +123,7 @@ function Home() {
                 {new Date(thread.created_at).toLocaleString()}
               </span>
             </Link>
+            {loggedInUser.id == thread.owner_id &&         <button type="button">削除</button> }
           </div>
         ))}
       </div>
