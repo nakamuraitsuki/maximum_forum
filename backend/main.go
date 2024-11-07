@@ -146,6 +146,8 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			getThreadByID(w, r, db)
+		case http.MethodDelete:
+			deleteThreadByID(w, r, db)
 		}
 	}))
 
@@ -273,6 +275,29 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Comment created successfully")
 }
 
+func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	thread_id := r.URL.Query().Get(("threadID"))
+	rows, err := db.Query(getCommentsQuery, thread_id)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to retrieve comments")
+		return
+	}
+	defer rows.Close()
+
+	var comments []Comment
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.ID, &comment.Message, &comment.CreatedAt, &comment.Name)
+		if err != nil {
+			responseJSON(w, http.StatusInternalServerError, "Failed to parse comment data")
+			return
+		}
+		comments = append(comments, comment)
+	}
+
+	responseJSON(w, http.StatusOK, comments)
+}
+
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	claims, err := validateJWT(r)
 	if err != nil {
@@ -297,34 +322,12 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
-func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	thread_id := r.URL.Query().Get(("threadID"))
-	rows, err := db.Query(getCommentsQuery, thread_id)
-	if err != nil {
-		responseJSON(w, http.StatusInternalServerError, "Failed to retrieve comments")
-		return
-	}
-	defer rows.Close()
-
-	var comments []Comment
-	for rows.Next() {
-		var comment Comment
-		err := rows.Scan(&comment.ID, &comment.Message, &comment.CreatedAt, &comment.Name)
-		if err != nil {
-			responseJSON(w, http.StatusInternalServerError, "Failed to parse comment data")
-			return
-		}
-		comments = append(comments, comment)
-	}
-
-	responseJSON(w, http.StatusOK, comments)
-}
-
 func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 	var threads []Thread
 	rows, err := db.Query("SELECT * FROM threads")
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
+		return
 	}
 	defer rows.Close()
 
@@ -360,6 +363,48 @@ func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	responseJSON(w, http.StatusOK, thread)
+}
+
+func deleteThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/threads/")
+    threadID, err := strconv.Atoi(idStr)
+    if err != nil {
+        http.Error(w, "Invalid thread ID", http.StatusBadRequest)
+        return
+    }
+	//コメントとスレッドの一方のみが削除されるのを防ぐトランザクション
+	tx, err := db.Begin()
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to start transaction")
+		return
+	}
+	defer func() {
+        if err != nil {
+            tx.Rollback() // エラー時にロールバックする
+        }
+    }()
+
+	_, err = tx.Exec("DELETE FROM comments WHERE id=?",threadID)
+	if err != nil{
+		tx.Rollback()
+		responseJSON(w, http.StatusInternalServerError, "Failed to delete comments")
+		return
+	}
+
+	_,err = tx.Exec("DELETE FROM threads WHERE id=?", threadID)
+	if err != nil {
+		tx.Rollback()
+		responseJSON(w, http.StatusInternalServerError, "Failed to delete thread")
+		return
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Failed to commit transaction")
+		return
+	}
+
+	responseJSON(w, http.StatusOK, "thread and comments deleted successfully")
 }
 
 func HandleCORS(h http.HandlerFunc) http.HandlerFunc {
