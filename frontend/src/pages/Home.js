@@ -98,7 +98,15 @@ function Home() {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 404) {
+          console.log(`Thread with ID ${threadID} not found.`);
+          return;
+        } else if (response.status === 500) {
+          console.log("Server error occurred while deleting the thread.");
+          return;
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
       }
       console.log("スレッド削除:");
       setGetTrigger((prev) => !prev);
