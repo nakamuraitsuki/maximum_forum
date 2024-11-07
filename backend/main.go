@@ -384,7 +384,7 @@ func deleteThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
         }
     }()
 
-	_, err = tx.Exec("DELETE FROM comments WHERE id=?",threadID)
+	_, err = tx.Exec("DELETE FROM comments WHERE thread_id=?",threadID)
 	if err != nil{
 		tx.Rollback()
 		responseJSON(w, http.StatusInternalServerError, "Failed to delete comments")
