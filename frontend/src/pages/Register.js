@@ -1,3 +1,4 @@
+import "./Register.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -73,13 +74,13 @@ export default function Register() {
   };
 
   return (
-    <div>
+    <div className="register">
       <h1>新規登録</h1>
-      <nav>
+      <nav className="register-nav">
         <Link to="/">Home</Link>
         <Link to="/login">ログイン</Link>
       </nav>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="register-form">
         {error && <p style={{ color: "red" }}>{error}</p>}
         <input
           type="text"
