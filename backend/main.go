@@ -350,13 +350,10 @@ func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
         return
     }
 	fmt.Println("getThreadByID:",threadID)
-	row, err := db.Query("SELECT * FROM threads WHERE id=?",threadID)
-	if err != nil {
-		responseJSON(w, http.StatusInternalServerError, "Failed to get thread by id")	
-	}
-	defer row.Close()
-
-	row.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
+	fmt.Println("getThreadByID:", threadID)
+	row := db.QueryRow("SELECT * FROM threads WHERE id = ?", threadID)
+	
+	err = row.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to parse thread data")
 		return
