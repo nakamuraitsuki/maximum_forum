@@ -92,6 +92,22 @@ function Home() {
     }
   };
 
+  const deleteThread = async (threadID) => {
+    try{
+      const response = await fetch(`http://localhost:8080/api/threads/${threadID}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      console.log("スレッド削除:");
+      setGetTrigger((prev) => !prev);
+      return;
+    } catch (error) {
+      console.log("Fetch Error", error);
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     postThread(threadName);
