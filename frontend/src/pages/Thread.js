@@ -61,14 +61,14 @@ function Thread() {
   };
 
   const getThreadInfo = async () => {
-    const url = `http://localhost:8080/api/threads?threadID=${thread_id}`
+    const url = `http://localhost:8080/api/threads/${thread_id}`
     try {
         const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`コメント取得エラー/status:${response.status}`);
+          throw new Error(`スレッド取得エラー/status:${response.status}`);
         }
         const data = await response.json();
-        console.log("コメント取得成功", data);
+        console.log("スレッド取得成功", data);
         if (data != null) setThreadInfo(data);
       } catch (error) {
         console.error(error.message);
@@ -119,6 +119,7 @@ function Thread() {
 
   useEffect(() => {
     getComments();
+    getThreadInfo();
   }, [getTrigger]);
 
   return (

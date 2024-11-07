@@ -142,7 +142,7 @@ func main() {
 		}
 	}))
 
-	http.HandleFunc("/api/htreads/", HandleCORS(func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/api/threads/", HandleCORS(func(w http.ResponseWriter, r *http.Request){
 		switch r.Method {
 		case http.MethodGet:
 			getThreadByID(w, r, db)
@@ -299,7 +299,6 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	thread_id := r.URL.Query().Get(("threadID"))
-	fmt.Println(thread_id);
 	rows, err := db.Query(getCommentsQuery, thread_id)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to retrieve comments")
@@ -350,7 +349,7 @@ func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
         http.Error(w, "Invalid thread ID", http.StatusBadRequest)
         return
     }
-
+	fmt.Println("getThreadByID:",threadID)
 	row, err := db.Query("SELECT * FROM threads WHERE id=?",threadID)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get thread by id")	
