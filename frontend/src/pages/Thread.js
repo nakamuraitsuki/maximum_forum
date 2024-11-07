@@ -80,7 +80,6 @@ function Thread() {
       /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     ); // トークンを取得
-    const userId = getUserIdFromToken(token); // ユーザーIDを取得
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");

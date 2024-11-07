@@ -5,7 +5,7 @@ function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState({id: "", name: ""});
 
   // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
@@ -37,8 +37,9 @@ function Home() {
     );
 
     if (token) {
+      const id = getUserIdFromToken(token);
       const name = getUsernameFromToken(token);
-      setLoggedInUser(name);
+      setLoggedInUser({id, name});
     }
   }, []);
 
@@ -62,7 +63,6 @@ function Home() {
       /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     ); // トークンを取得
-    const userId = getUserIdFromToken(token); // ユーザーIDを取得
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");
@@ -105,7 +105,7 @@ function Home() {
   return (
     <div className="App">
       <h1>Maximum掲示板</h1>
-      {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
+      {loggedInUser && <p>{loggedInUser.name} さん、こんにちは！</p>}
       <nav>
         <Link to="/register">新規登録</Link>
         {loggedInUser ? (
