@@ -353,8 +353,7 @@ func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
         http.Error(w, "Invalid thread ID", http.StatusBadRequest)
         return
     }
-	fmt.Println("getThreadByID:",threadID)
-	fmt.Println("getThreadByID:", threadID)
+	
 	row := db.QueryRow("SELECT * FROM threads WHERE id = ?", threadID)
 	err = row.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
 	if thread.ID == 0 {
