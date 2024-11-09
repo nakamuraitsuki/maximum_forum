@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function Home() {
-  const [message, setMessage] = useState("");
-  const [comments, setComments] = useState([]);
+  const [threadName, setThreadName] = useState("");
+  const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState({id: "", name: ""});
 
   // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
@@ -38,32 +38,33 @@ function Home() {
     );
 
     if (token) {
+      const id = getUserIdFromToken(token);
       const name = getUsernameFromToken(token);
-      setLoggedInUser(name);
+      setLoggedInUser({id, name});
     }
   }, []);
 
-  const getComments = async () => {
-    const url = "http://localhost:8080/api/comments";
+  const getThreads = async () => {
+    const url = "http://localhost:8080/api/threads";
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`コメント取得エラー/status:${response.status}`);
+        throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
       const data = await response.json();
-      console.log("コメント取得成功", data);
-      if (data != null) setComments(data);
+      console.log("スレッド取得成功", data);
+      if (data != null) setThreads(data);
+      else setThreads([]);
     } catch (error) {
       console.error(error.message);
     }
   };
 
-  const postMessage = async (message) => {
+  const postThread = async (threadName) => {
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     ); // トークンを取得
-    const userId = getUserIdFromToken(token); // ユーザーIDを取得
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");
@@ -71,22 +72,21 @@ function Home() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/comments", {
+      const response = await fetch("http://localhost:8080/api/threads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
         body: JSON.stringify({
-          user_id: userId,
-          message: message,
+          name: threadName
         }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("コメントが投稿されました:", data);
+      console.log("スレッド作成:", data);
       setGetTrigger((prev) => !prev);
       return data;
     } catch (error) {
@@ -94,48 +94,73 @@ function Home() {
     }
   };
 
+  const deleteThread = async (threadID) => {
+    try{
+      const response = await fetch(`http://localhost:8080/api/threads/${threadID}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log(`Thread with ID ${threadID} not found.`);
+          return;
+        } else if (response.status === 500) {
+          console.log("Server error occurred while deleting the thread.");
+          return;
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+      console.log("スレッド削除:");
+      setGetTrigger((prev) => !prev);
+      return;
+    } catch (error) {
+      console.log("Fetch Error", error);
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    postMessage(message);
-    setMessage("");
+    postThread(threadName);
+    setThreadName("");
   };
 
   useEffect(() => {
-    getComments();
+    getThreads();
   }, [getTrigger]);
 
   return (
     <div className="home">
       <h1>Maximum掲示板</h1>
-      {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
+      {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
       <nav className="home-nav">
         <Link to="/register">新規登録</Link>
-        {loggedInUser ? (
+        {loggedInUser.id && loggedInUser.name ? (
           <Link to="/logout">ログアウト</Link>
         ) : (
           <Link to="/login">ログイン</Link>
         )}
       </nav>
-
       <div className="comments">
-        {comments.map((comment) => (
-          <div key={comment.id}>
-            <p>
-              {comment.name}:{comment.message}{" "}
-              {new Date(comment.created_at).toLocaleString()}
-            </p>
+        {threads.map((thread) => (
+          <div key={thread.id}>
+            <Link to={`/thread/${thread.id}`}>
+              <span>
+                {thread.name}{" "}
+                {new Date(thread.created_at).toLocaleString()}
+              </span>
+            </Link>
+            {loggedInUser.id == String(thread.owner_id) && <button type="button" onClick={() => deleteThread(thread.id)}>削除</button> }
           </div>
         ))}
       </div>
-
       <form onSubmit={handleSubmit} className="comment-form">
         <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="コメントを入力してください"
+          value={threadName}
+          onChange={(e) => setThreadName(e.target.value)}
+          placeholder="スレッド名"
           required
         ></textarea>
-        <button type="submit">投稿</button>
+        <button type="submit">作成</button>
       </form>
     </div>
   );
