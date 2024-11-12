@@ -1,12 +1,13 @@
 import "./Home.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // useNavigate をインポート
 import { useState, useEffect } from "react";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState({id: "", name: ""});
+  const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
+  const navigate = useNavigate(); // useNavigate フックの呼び出し
 
   // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
@@ -40,7 +41,7 @@ function Home() {
     if (token) {
       const id = getUserIdFromToken(token);
       const name = getUsernameFromToken(token);
-      setLoggedInUser({id, name});
+      setLoggedInUser({ id, name });
     }
   }, []);
 
@@ -68,6 +69,7 @@ function Home() {
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");
+      navigate("/login"); // ログインページにリダイレクト
       return;
     }
 
@@ -79,7 +81,7 @@ function Home() {
           Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
         body: JSON.stringify({
-          name: threadName
+          name: threadName,
         }),
       });
       if (!response.ok) {
@@ -95,10 +97,13 @@ function Home() {
   };
 
   const deleteThread = async (threadID) => {
-    try{
-      const response = await fetch(`http://localhost:8080/api/threads/${threadID}`, {
-        method: "DELETE",
-      });
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/threads/${threadID}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!response.ok) {
         if (response.status === 404) {
           console.log(`Thread with ID ${threadID} not found.`);
@@ -145,11 +150,14 @@ function Home() {
           <div key={thread.id}>
             <Link to={`/thread/${thread.id}`}>
               <span>
-                {thread.name}{" "}
-                {new Date(thread.created_at).toLocaleString()}
+                {thread.name} {new Date(thread.created_at).toLocaleString()}
               </span>
             </Link>
-            {loggedInUser.id == String(thread.owner_id) && <button type="button" onClick={() => deleteThread(thread.id)}>削除</button> }
+            {loggedInUser.id == String(thread.owner_id) && (
+              <button type="button" onClick={() => deleteThread(thread.id)}>
+                削除
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -160,7 +168,7 @@ function Home() {
           placeholder="スレッド名"
           required
         ></textarea>
-        <button type="submit">作成</button>
+        <button type="submit">スレッドを作成</button>
       </form>
     </div>
   );
