@@ -6,7 +6,7 @@ function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState({id: "", name: ""});
+  const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
 
   // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
@@ -40,7 +40,7 @@ function Home() {
     if (token) {
       const id = getUserIdFromToken(token);
       const name = getUsernameFromToken(token);
-      setLoggedInUser({id, name});
+      setLoggedInUser({ id, name });
     }
   }, []);
 
@@ -79,7 +79,7 @@ function Home() {
           Authorization: `Bearer ${token}`, // 認証用のトークンを追加
         },
         body: JSON.stringify({
-          name: threadName
+          name: threadName,
         }),
       });
       if (!response.ok) {
@@ -95,10 +95,13 @@ function Home() {
   };
 
   const deleteThread = async (threadID) => {
-    try{
-      const response = await fetch(`http://localhost:8080/api/threads/${threadID}`, {
-        method: "DELETE",
-      });
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/threads/${threadID}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!response.ok) {
         if (response.status === 404) {
           console.log(`Thread with ID ${threadID} not found.`);
@@ -115,6 +118,24 @@ function Home() {
       return;
     } catch (error) {
       console.log("Fetch Error", error);
+    }
+  };
+
+  // スレッドのフィルタリング関数
+  const threadFilter = (event) => {
+    event.preventDefault();
+    const keyword = event.target[0].value;
+    if (keyword === "") {
+      setGetTrigger((prev) => !prev);
+      return;
+    }
+    const filteredThreads = threads.filter((thread) =>
+      thread.name.includes(keyword)
+    );
+    if (filteredThreads.length === 0) {
+      alert("スレッドが見つかりませんでした");
+    } else {
+      setThreads(filteredThreads);
     }
   };
 
@@ -140,16 +161,28 @@ function Home() {
           <Link to="/login">ログイン</Link>
         )}
       </nav>
+      <div className="thread-filter">
+        <form onSubmit={threadFilter}>
+          <input type="text" placeholder="スレッド検索"></input>
+          <button type="submit">検索</button>
+          <button type="button" onClick={() => setGetTrigger((prev) => !prev)}>
+            リセット
+          </button>
+        </form>
+      </div>
       <div className="comments">
         {threads.map((thread) => (
           <div key={thread.id}>
             <Link to={`/thread/${thread.id}`}>
               <span>
-                {thread.name}{" "}
-                {new Date(thread.created_at).toLocaleString()}
+                {thread.name} {new Date(thread.created_at).toLocaleString()}
               </span>
             </Link>
-            {loggedInUser.id == String(thread.owner_id) && <button type="button" onClick={() => deleteThread(thread.id)}>削除</button> }
+            {loggedInUser.id === String(thread.owner_id) && (
+              <button type="button" onClick={() => deleteThread(thread.id)}>
+                削除
+              </button>
+            )}
           </div>
         ))}
       </div>
