@@ -118,11 +118,7 @@ function Home() {
     const filteredThreads = threads.filter((thread) =>
       thread.name.includes(keyword)
     );
-    if (filteredThreads.length === 0) {
-      alert("スレッドが見つかりませんでした");
-    } else {
-      setThreads(filteredThreads);
-    }
+    setThreads(filteredThreads);
   };
 
   const handleReset = () => {
@@ -163,22 +159,26 @@ function Home() {
           </button>
         </form>
       </div>
-      <div className="comments">
-        {threads.map((thread) => (
-          <div key={thread.id}>
-            <Link to={`/thread/${thread.id}`}>
-              <span>
-                {thread.name} {new Date(thread.created_at).toLocaleString()}
-              </span>
-            </Link>
-            {loggedInUser.id == String(thread.owner_id) && (
-              <button type="button" onClick={() => deleteThread(thread.id)}>
-                削除
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+      {threads.length === 0 ? (
+        <p>スレッドがありません</p>
+      ) : (
+        <div className="threads">
+          {threads.map((thread) => (
+            <div key={thread.id}>
+              <Link to={`/thread/${thread.id}`}>
+                <span>
+                  {thread.name} {new Date(thread.created_at).toLocaleString()}
+                </span>
+              </Link>
+              {loggedInUser.id == String(thread.owner_id) && (
+                <button type="button" onClick={() => deleteThread(thread.id)}>
+                  削除
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="comment-form">
         <textarea
           value={threadName}
