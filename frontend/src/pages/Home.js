@@ -1,14 +1,14 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
+  const searchInputRef = useRef();
 
-  // JWTトークンからユーザー名を取得する関数
   const getUsernameFromToken = (token) => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -19,7 +19,6 @@ function Home() {
     }
   };
 
-  // JWTトークンからユーザーIDを取得する関数
   const getUserIdFromToken = (token) => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -31,7 +30,6 @@ function Home() {
   };
 
   useEffect(() => {
-    // トークンが存在する場合、ユーザー名を取得してセット
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
@@ -64,7 +62,7 @@ function Home() {
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
-    ); // トークンを取得
+    );
 
     if (!token) {
       console.error("トークンがありません。ログインが必要です。");
@@ -76,11 +74,9 @@ function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 認証用のトークンを追加
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: threadName,
-        }),
+        body: JSON.stringify({ name: threadName }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -103,25 +99,15 @@ function Home() {
         }
       );
       if (!response.ok) {
-        if (response.status === 404) {
-          console.log(`Thread with ID ${threadID} not found.`);
-          return;
-        } else if (response.status === 500) {
-          console.log("Server error occurred while deleting the thread.");
-          return;
-        } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       console.log("スレッド削除:");
       setGetTrigger((prev) => !prev);
-      return;
     } catch (error) {
-      console.log("Fetch Error", error);
+      console.error("Fetch Error", error);
     }
   };
 
-  // スレッドのフィルタリング関数
   const threadFilter = (event) => {
     event.preventDefault();
     const keyword = event.target[0].value;
@@ -136,6 +122,13 @@ function Home() {
       alert("スレッドが見つかりませんでした");
     } else {
       setThreads(filteredThreads);
+    }
+  };
+
+  const handleReset = () => {
+    setGetTrigger((prev) => !prev);
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
     }
   };
 
@@ -163,9 +156,9 @@ function Home() {
       </nav>
       <div className="thread-filter">
         <form onSubmit={threadFilter}>
-          <input type="text" placeholder="スレッド検索"></input>
+          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
           <button type="submit">検索</button>
-          <button type="button" onClick={() => setGetTrigger((prev) => !prev)}>
+          <button type="button" onClick={handleReset}>
             リセット
           </button>
         </form>
