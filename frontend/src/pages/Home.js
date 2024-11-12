@@ -171,7 +171,7 @@ function Home() {
                 {thread.name} {new Date(thread.created_at).toLocaleString()}
               </span>
             </Link>
-            {loggedInUser.id === String(thread.owner_id) && (
+            {loggedInUser.id == String(thread.owner_id) && (
               <button type="button" onClick={() => deleteThread(thread.id)}>
                 削除
               </button>
