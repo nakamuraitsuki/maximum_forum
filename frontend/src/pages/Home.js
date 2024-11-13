@@ -1,13 +1,15 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
+  const [searchKeyword, setSearchKeyword] = useState("");
   const searchInputRef = useRef();
+  const allThreads = useMemo(() => threads, [threads]);
 
   const getUsernameFromToken = (token) => {
     try {
@@ -99,10 +101,10 @@ function Home() {
         }
       );
       if (!response.ok) {
-        if(response.status === 404){
+        if (response.status === 404) {
           console.log(`Thread with ID ${threadID} not found.`);
           return;
-        } else if(response.status === 500) {
+        } else if (response.status === 500) {
           console.log("Server error occurred while deleting the thread.");
           return;
         } else {
@@ -116,21 +118,24 @@ function Home() {
     }
   };
 
-  const threadFilter = (event) => {
-    event.preventDefault();
-    const keyword = event.target[0].value;
-    if (keyword === "") {
-      setGetTrigger((prev) => !prev);
-      return;
-    }
-    const filteredThreads = threads.filter((thread) =>
-      thread.name.includes(keyword)
+  useEffect(() => {
+    getThreads();
+  }, [getTrigger]);
+
+  const filteredThreads = useMemo(() => {
+    return allThreads.filter((thread) =>
+      thread.name.toLowerCase().includes(searchKeyword.toLowerCase())
     );
-    setThreads(filteredThreads);
+  }, [allThreads, searchKeyword]);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const keyword = searchInputRef.current.value;
+    setSearchKeyword(keyword);
   };
 
   const handleReset = () => {
-    setGetTrigger((prev) => !prev);
+    setSearchKeyword("");
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -141,10 +146,6 @@ function Home() {
     postThread(threadName);
     setThreadName("");
   };
-
-  useEffect(() => {
-    getThreads();
-  }, [getTrigger]);
 
   return (
     <div className="home">
@@ -159,7 +160,7 @@ function Home() {
         )}
       </nav>
       <div className="thread-filter">
-        <form onSubmit={threadFilter}>
+        <form onSubmit={handleSearch}>
           <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
           <button type="submit">検索</button>
           <button type="button" onClick={handleReset}>
@@ -167,11 +168,11 @@ function Home() {
           </button>
         </form>
       </div>
-      {threads.length === 0 ? (
+      {filteredThreads.length === 0 ? (
         <p>スレッドがありません</p>
       ) : (
         <div className="threads">
-          {threads.map((thread) => (
+          {filteredThreads.map((thread) => (
             <div key={thread.id}>
               <Link to={`/thread/${thread.id}`}>
                 <span>
