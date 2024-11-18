@@ -81,6 +81,11 @@ type Thread struct {
     OwnerID   string `json:"owner_id"`
 }
 
+type CommentResponse struct {
+	Comments	[]Comment	`json:"comments"`
+	IsLimitReached  bool      `json:"is_limit_reached"`
+}
+
 func init() {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
@@ -334,7 +339,7 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	//上限に達しているか否かを保持
 	isLimitReached = commentCount >= maxComments
-	
+
 	responseJSON(w, http.StatusOK, comments)
 }
 
