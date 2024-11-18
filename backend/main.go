@@ -268,6 +268,27 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		responseJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	//現在のコメント数の取得
+	var commentCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE thread_id = ?",comment.ThreadID).Scan(&commentCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドにコメントが存在しない場合
+			commentCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//コメント数が上限に達していないかの確認
+	if commentCount >= maxComments {
+		//達していたら403を返す（コメント作成を許可しない）
+		responseJSON(w, http.StatusForbidden, "Comment limit reached")
+		return
+	}
+
 	now := time.Now()
 	_, err = db.Exec(addComment, userID, comment.ThreadID, comment.Message, now)
 	if err != nil {
