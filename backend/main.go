@@ -338,9 +338,13 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 	//上限に達しているか否かを保持
-	isLimitReached = commentCount >= maxComments
-
-	responseJSON(w, http.StatusOK, comments)
+	isLimitReached := commentCount >= maxComments
+	//コメント配列と上限に達しているかどうかをまとめる
+	response := CommentResponse{
+		Comments: comments,
+		IsLimitReached: isLimitReached,
+	}
+	responseJSON(w, http.StatusOK, response)
 }
 
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
