@@ -6,6 +6,7 @@ function Thread() {
   const { thread_id } = useParams();
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
+  const [isLimitReached, setIsLimitReached] = useState(false);
   const [threadInfo, setThreadInfo] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState("");
@@ -57,6 +58,7 @@ function Thread() {
       const data = await response.json();
       console.log("コメント取得成功", data);
       if (data.comments != null) setComments(data.comments);
+      setIsLimitReached(data.is_limit_reached);
     } catch (error) {
       console.error(error.message);
     }
@@ -149,6 +151,7 @@ function Thread() {
             </p>
           </div>
         ))}
+        <div>{isLimitReached && <p>コメント上限に達しています</p>}</div>
       </div>
 
       <form onSubmit={handleSubmit}>
