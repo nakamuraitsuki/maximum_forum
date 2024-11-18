@@ -319,6 +319,22 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		comments = append(comments, comment)
 	}
 
+	//現在のコメント数の取得
+	var commentCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE thread_id = ?",thread_id).Scan(&commentCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドにコメントが存在しない場合
+			commentCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//上限に達しているか否かを保持
+	isLimitReached = commentCount >= maxComments
+	
 	responseJSON(w, http.StatusOK, comments)
 }
 
