@@ -52,6 +52,8 @@ const (
 		WHERE comments.thread_id = ?
 		ORDER BY comments.created_at DESC
 	`
+	//コメント数上限
+	maxComments = 3
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
