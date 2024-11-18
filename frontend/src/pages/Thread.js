@@ -56,7 +56,7 @@ function Thread() {
       }
       const data = await response.json();
       console.log("コメント取得成功", data);
-      if (data != null) setComments(data);
+      if (data.comments != null) setComments(data.comments);
     } catch (error) {
       console.error(error.message);
     }
