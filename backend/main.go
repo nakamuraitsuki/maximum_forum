@@ -355,6 +355,26 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	//現在のスレッド数の取得
+	var threadCount int 
+	err := db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//スレッド数が上限に達していないかの確認
+	if threadCount >= maxThread {
+		//達していたら403を返す（スレッド作成を許可しない）
+		responseJSON(w, http.StatusForbidden, "Comment limit reached")
+		return
+	}
+
 	claims, err := validateJWT(r)
 	if err != nil {
 		responseJSON(w, http.StatusUnauthorized, err.Error())
