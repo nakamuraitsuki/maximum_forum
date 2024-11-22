@@ -52,10 +52,8 @@ const (
 		WHERE comments.thread_id = ?
 		ORDER BY comments.created_at DESC
 	`
-
-
-	//スレッド数上限
-	maxThread = 3
+	//コメント数上限
+	maxComments = 3
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
@@ -81,6 +79,11 @@ type Thread struct {
     Name      string `json:"name"`
     CreatedAt string `json:"created_at"`
     OwnerID   string `json:"owner_id"`
+}
+
+type CommentResponse struct {
+	Comments	[]Comment	`json:"comments"`
+	IsLimitReached  bool      `json:"is_limit_reached"`
 }
 
 func init() {
@@ -270,6 +273,27 @@ func createComment(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		responseJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	//現在のコメント数の取得
+	var commentCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE thread_id = ?",comment.ThreadID).Scan(&commentCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドにコメントが存在しない場合
+			commentCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//コメント数が上限に達していないかの確認
+	if commentCount >= maxComments {
+		//達していたら403を返す（コメント作成を許可しない）
+		responseJSON(w, http.StatusForbidden, "Comment limit reached")
+		return
+	}
+
 	now := time.Now()
 	_, err = db.Exec(addComment, userID, comment.ThreadID, comment.Message, now)
 	if err != nil {
@@ -300,7 +324,27 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		comments = append(comments, comment)
 	}
 
-	responseJSON(w, http.StatusOK, comments)
+	//現在のコメント数の取得
+	var commentCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE thread_id = ?",thread_id).Scan(&commentCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドにコメントが存在しない場合
+			commentCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//上限に達しているか否かを保持
+	isLimitReached := commentCount >= maxComments
+	//コメント配列と上限に達しているかどうかをまとめる
+	response := CommentResponse{
+		Comments: comments,
+		IsLimitReached: isLimitReached,
+	}
+	responseJSON(w, http.StatusOK, response)
 }
 
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
