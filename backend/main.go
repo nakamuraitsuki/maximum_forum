@@ -88,6 +88,11 @@ type CommentResponse struct {
 	IsLimitReached  bool      `json:"is_limit_reached"`
 }
 
+type ThreadResponse struct {
+	Threads		[]Thread	`json:"threads"`
+	IsLimitReached	bool	`json:"is_limit_reached"`
+}
+
 func init() {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
