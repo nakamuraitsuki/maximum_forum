@@ -419,7 +419,7 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 
 	//現在のスレッド数の取得
 	var threadCount int 
-	err = db.QueryRow("SELECT COUNT(*) FROM comments").Scan(&threadCount)
+	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
 	if err != nil{
 		if err == sql.ErrNoRows {
 			// スレッドが存在しない場合
