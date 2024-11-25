@@ -7,6 +7,7 @@ function Thread() {
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
   const [isLimitReached, setIsLimitReached] = useState(false);
+  const [commentCount, setCommentCount] = useState({commentCount:0,maxComment:0})
   const [threadInfo, setThreadInfo] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState("");
@@ -59,6 +60,7 @@ function Thread() {
       console.log("コメント取得成功", data);
       if (data.comments != null) setComments(data.comments);
       setIsLimitReached(data.is_limit_reached);
+      setCommentCount({commentCount:data.comment_count, maxComment:data.max_comments});
     } catch (error) {
       console.error(error.message);
     }
@@ -160,7 +162,7 @@ function Thread() {
         ))}
         <div>{isLimitReached && <p>コメント上限に達しています</p>}</div>
       </div>
-
+      <p>コメント数　{commentCount.commentCount}/{commentCount.maxComment}</p>
       <form onSubmit={handleSubmit}>
         <textarea
           value={message}
