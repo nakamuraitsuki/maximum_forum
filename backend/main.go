@@ -53,9 +53,9 @@ const (
 		ORDER BY comments.created_at DESC
 	`
 	//スレッド数上限
-	maxThread = 3
+	maxThread = 500
 	//コメント数上限
-	maxComments = 3
+	maxComments = 1000
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
