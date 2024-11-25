@@ -82,8 +82,10 @@ type Thread struct {
 }
 
 type CommentResponse struct {
-	Comments	[]Comment	`json:"comments"`
-	IsLimitReached  bool      `json:"is_limit_reached"`
+	Comments		[]Comment	`json:"comments"`
+	IsLimitReached  bool      	`json:"is_limit_reached"`
+	MaxComments		int			`json:"max_comments"`
+	CommentCount	int			`json:"comment_count"`
 }
 
 func init() {
@@ -343,6 +345,8 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	response := CommentResponse{
 		Comments: comments,
 		IsLimitReached: isLimitReached,
+		MaxComments: maxComments,
+		CommentCount: commentCount,
 	}
 	responseJSON(w, http.StatusOK, response)
 }
