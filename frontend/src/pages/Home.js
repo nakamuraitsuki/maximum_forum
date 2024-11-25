@@ -86,7 +86,6 @@ function Home() {
       if(response .status === 403) {
         console.error("スレッドの上限に達しました。");
         //TODO:上限を迎えていてなおスレッドの作成をした際の表示
-        alert("スレッド数が上限に達しています。");
         return;
       }
       if (!response.ok) {

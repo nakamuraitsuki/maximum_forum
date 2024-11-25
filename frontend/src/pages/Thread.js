@@ -109,7 +109,6 @@ function Thread() {
       if (response.status === 403) {
         console.error("コメントの上限に達しました。");
         //TODO:上限を迎えていてなおコメントをポストした際の表示
-        alert("コメントの上限に達しています。");
         return;
       }
       if (!response.ok) {
