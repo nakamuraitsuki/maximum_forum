@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
+  const [isLimitReached, setIsLimitReached] = useState(false);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -53,8 +54,9 @@ function Home() {
       }
       const data = await response.json();
       console.log("スレッド取得成功", data);
-      if (data != null) setThreads(data);
+      if (data.threads != null) setThreads(data.threads);
       else setThreads([]);
+      setIsLimitReached(data.is_limit_reached);
     } catch (error) {
       console.error(error.message);
     }
@@ -80,6 +82,12 @@ function Home() {
         },
         body: JSON.stringify({ name: threadName }),
       });
+      //スレッド条件に達している場合
+      if(response .status === 403) {
+        console.error("スレッドの上限に達しました。");
+        //TODO:上限を迎えていてなおスレッドの作成をした際の表示
+        return;
+      }
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -188,6 +196,7 @@ function Home() {
           ))}
         </div>
       )}
+      <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
       <form onSubmit={handleSubmit} className="comment-form">
         <textarea
           value={threadName}

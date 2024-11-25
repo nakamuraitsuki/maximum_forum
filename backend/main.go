@@ -52,8 +52,10 @@ const (
 		WHERE comments.thread_id = ?
 		ORDER BY comments.created_at DESC
 	`
+	//スレッド数上限
+	maxThread = 500
 	//コメント数上限
-	maxComments = 3
+	maxComments = 1000
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
@@ -86,6 +88,11 @@ type CommentResponse struct {
 	IsLimitReached  bool      	`json:"is_limit_reached"`
 	MaxComments		int			`json:"max_comments"`
 	CommentCount	int			`json:"comment_count"`
+}
+
+type ThreadResponse struct {
+	Threads		[]Thread	`json:"threads"`
+	IsLimitReached	bool	`json:"is_limit_reached"`
 }
 
 func init() {
@@ -352,6 +359,26 @@ func getComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	//現在のスレッド数の取得
+	var threadCount int 
+	err := db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//スレッド数が上限に達していないかの確認
+	if threadCount >= maxThread {
+		//達していたら403を返す（スレッド作成を許可しない）
+		responseJSON(w, http.StatusForbidden, "Comment limit reached")
+		return
+	}
+
 	claims, err := validateJWT(r)
 	if err != nil {
 		responseJSON(w, http.StatusUnauthorized, err.Error())
@@ -394,7 +421,27 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 		threads = append(threads, thread)
 	}
 
-	responseJSON(w, http.StatusOK, threads)
+	//現在のスレッド数の取得
+	var threadCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	//上限に達しているか否かを保持
+	isLimitReached := threadCount >= maxThread
+	//コメント配列と上限に達しているかどうかをまとめる
+	response := ThreadResponse{
+		Threads: threads,
+		IsLimitReached: isLimitReached,
+	}
+	responseJSON(w, http.StatusOK, response)
 }
 
 func getThreadByID(w http.ResponseWriter, r *http.Request, db *sql.DB) {
