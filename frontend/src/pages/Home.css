@@ -11,13 +11,13 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background-color: #b8ebfd;
 }
 
 .home {
   width: 600px;
   padding: 2rem;
-  background-color: #ffffff;
+  color: #1ed006;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

@@ -204,7 +204,7 @@ function Home() {
           placeholder="スレッド名"
           required
         ></textarea>
-        <button type="submit">作成</button>
+        <button type="submit">スレッドを作成</button>
       </form>
     </div>
   );
