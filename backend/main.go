@@ -405,6 +405,20 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
+	//現在のスレッド数の取得
+	var threadCount int 
+	err := db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	
 	var threads []Thread
 	rows, err := db.Query("SELECT * FROM threads")
 	if err != nil {
@@ -423,19 +437,6 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 		threads = append(threads, thread)
 	}
 
-	//現在のスレッド数の取得
-	var threadCount int 
-	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
-	if err != nil{
-		if err == sql.ErrNoRows {
-			// スレッドが存在しない場合
-			threadCount = 0
-		} else {
-			// その他のエラー
-			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
-			return
-		}
-	}
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
 	//コメント配列と上限に達しているかどうかをまとめる
