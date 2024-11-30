@@ -93,8 +93,10 @@ type CommentResponse struct {
 }
 
 type ThreadResponse struct {
-	Threads		[]Thread	`json:"threads"`
-	IsLimitReached	bool	`json:"is_limit_reached"`
+	Threads			[]Thread	`json:"threads"`
+	IsLimitReached	bool		`json:"is_limit_reached"`
+	MaxThread		int			`json:"max_threads"`
+	ThreadCount		int 		`json:"thread_count"`
 }
 
 func init() {
