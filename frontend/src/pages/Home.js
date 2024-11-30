@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
+  const [page, setPage] = useState(1);
   const [isLimitReached, setIsLimitReached] = useState(false);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
@@ -46,9 +47,8 @@ function Home() {
   }, []);
 
   const getThreads = async () => {
-    const url = "http://localhost:8080/api/threads";
     try {
-      const response = await fetch(url);
+      const response = await fetch(`http://localhost:8080/api/threads?page=${page}`);
       if (!response.ok) {
         throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
