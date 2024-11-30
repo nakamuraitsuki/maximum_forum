@@ -404,10 +404,18 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
-func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
+func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	//現在のページ数の取得
+	queryParams := r.URL.Query();
+	pageStr := queryParams.Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Invalid page")
+	}
+
 	//現在のスレッド数の取得
 	var threadCount int 
-	err := db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
 	if err != nil{
 		if err == sql.ErrNoRows {
 			// スレッドが存在しない場合
@@ -420,7 +428,7 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 	}
 	
 	var threads []Thread
-	rows, err := db.Query("SELECT * FROM threads")
+	rows, err := db.Query("SELECT * FROM threads LIMIT ? OFFSET ?", pagenation, (page-1)*pagenation)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
 		return
