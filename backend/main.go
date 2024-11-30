@@ -450,12 +450,15 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
+	//ページ数を保持(繰り上げ)
+	pageCount := (threadCount+pagenation-1)/pagenation
 	//コメント配列と上限に達しているかどうかをまとめる
 	response := ThreadResponse{
 		Threads: threads,
 		IsLimitReached: isLimitReached,
 		MaxThread: maxThread,
 		ThreadCount: threadCount,
+		PageCount: pageCount,
 	}
 	responseJSON(w, http.StatusOK, response)
 }
