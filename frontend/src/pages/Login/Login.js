@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   return (
-    <div className="login">
+    <div className="container">
       <h1>ログイン</h1>
       <nav className="login-nav">
         <Link to="/">Home</Link>

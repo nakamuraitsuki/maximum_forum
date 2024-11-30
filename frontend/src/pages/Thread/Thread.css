@@ -1,0 +1,64 @@
+.container {
+  width: 600px;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.thread-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.navigation {
+  margin-bottom: 1.5rem;
+}
+
+.comment-form {
+  align-items: center;
+  input {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 25px;
+    background: #f7f7f7;
+    color: #333;
+    font-size: 1em;
+    line-height: 1.5;
+  }
+}
+
+.comment {
+  margin-bottom: 0.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.comment p {
+  margin: 0;
+}
+
+.comment .id {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.comment .name {
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  font-weight: 600;
+  color: #34aa8e;
+}
+
+.comment .message {
+  font-size: 1rem;
+}
+
+.comment .created-at {
+  padding-left: 0.2rem;
+  font-size: 0.7em;
+  color: #555;
+}

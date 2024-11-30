@@ -1,10 +1,10 @@
 import "./App.css";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Logout from "./pages/Logout";
-import Register from "./pages/Register";
-import Thread from "./pages/Thread";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Logout from "./pages/Logout/Logout";
+import Register from "./pages/Register/Register";
+import Thread from "./pages/Thread/Thread";
 import NotFound from "./pages/NotFound";
 
 function App() {

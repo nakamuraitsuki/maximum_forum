@@ -198,12 +198,12 @@ function Home() {
       )}
       <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
       <form onSubmit={handleSubmit} className="comment-form">
-        <textarea
+        <input
           value={threadName}
           onChange={(e) => setThreadName(e.target.value)}
           placeholder="スレッド名"
           required
-        ></textarea>
+        ></input>
         <button type="submit">作成</button>
       </form>
     </div>

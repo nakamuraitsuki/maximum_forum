@@ -1,5 +1,12 @@
 /* Login.css */
 
+/* body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+} */
+
 .login {
   width: 360px;
   padding: 2rem;
@@ -57,10 +64,4 @@
 
 .login-form button:hover {
   background-color: #1359b6;
-}
-
-p {
-  font-size: 0.9rem;
-  color: red;
-  margin-bottom: 1rem;
 }

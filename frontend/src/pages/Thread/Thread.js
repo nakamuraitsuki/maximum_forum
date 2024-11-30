@@ -1,3 +1,4 @@
+import "./Thread.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -7,7 +8,10 @@ function Thread() {
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
   const [isLimitReached, setIsLimitReached] = useState(false);
-  const [commentCount, setCommentCount] = useState({commentCount:0,maxComment:0})
+  const [commentCount, setCommentCount] = useState({
+    commentCount: 0,
+    maxComment: 0,
+  });
   const [threadInfo, setThreadInfo] = useState([]);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState("");
@@ -60,29 +64,32 @@ function Thread() {
       console.log("コメント取得成功", data);
       if (data.comments != null) setComments(data.comments);
       setIsLimitReached(data.is_limit_reached);
-      setCommentCount({commentCount:data.comment_count, maxComment:data.max_comments});
+      setCommentCount({
+        commentCount: data.comment_count,
+        maxComment: data.max_comments,
+      });
     } catch (error) {
       console.error(error.message);
     }
   };
 
   const getThreadInfo = async () => {
-    const url = `http://localhost:8080/api/threads/${thread_id}`
+    const url = `http://localhost:8080/api/threads/${thread_id}`;
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          if(response.status == 404) {
-            navigate("/NotFound");
-          }
-          throw new Error(`スレッド取得エラー/status:${response.status}`);
+      const response = await fetch(url);
+      if (!response.ok) {
+        if (response.status == 404) {
+          navigate("/NotFound");
         }
-        const data = await response.json();
-        console.log("スレッド取得成功", data);
-        if (data != null) setThreadInfo(data);
-      } catch (error) {
-        console.error(error.message);
+        throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
-  }
+      const data = await response.json();
+      console.log("スレッド取得成功", data);
+      if (data != null) setThreadInfo(data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   const postMessage = async (message) => {
     const token = document.cookie.replace(
@@ -137,40 +144,42 @@ function Thread() {
   }, [getTrigger]);
 
   return (
-    <div className="App">
+    <div className="container">
       <h1>Maximum掲示板</h1>
-      <h2>{threadInfo.name}</h2>
-      {loggedInUser && <p>{loggedInUser} さん、こんにちは！</p>}
-      <nav>
+      <nav className="navigation">
         <Link to="/register">新規登録</Link>
         {loggedInUser ? (
           <Link to="/logout">ログアウト</Link>
         ) : (
           <Link to="/login">ログイン</Link>
         )}
+        <Link to="/">スレッド一覧</Link>
       </nav>
-
+      <h2 className="thread-title">{threadInfo.name}</h2>
+      {loggedInUser && <span>{loggedInUser} さん、こんにちは！</span>}
       <div>
+        <form onSubmit={handleSubmit} className="comment-form">
+          <input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="コメントを入力してください"
+            required
+            ></input>
+          <button type="submit">投稿</button>
+        </form>
+        <p>コメント数:{commentCount.commentCount}/{commentCount.maxComment}</p>
         {comments.map((comment) => (
-          <div key={comment.id}>
-            <p>
-              {comment.name}:{comment.message}{" "}
+          <div key={comment.id} className="comment">
+            <span className="id">{comments.length - comments.indexOf(comment)}{"."}</span>
+            <span className="name">{comment.name}</span>
+            <p className="created-at">
               {new Date(comment.created_at).toLocaleString()}
             </p>
+            <p className="message">{comment.message}</p>
           </div>
         ))}
         <div>{isLimitReached && <p>コメント上限に達しています</p>}</div>
       </div>
-      <p>コメント数　{commentCount.commentCount}/{commentCount.maxComment}</p>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="コメントを入力してください"
-          required
-        ></textarea>
-        <button type="submit">投稿</button>
-      </form>
     </div>
   );
 }
