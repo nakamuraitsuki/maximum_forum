@@ -15,8 +15,6 @@ function Home() {
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
   const [searchKeyword, setSearchKeyword] = useState("");
-  const searchInputRef = useRef();
-  const allThreads = useMemo(() => threads, [threads]);
 
   const getUsernameFromToken = (token) => {
     try {
