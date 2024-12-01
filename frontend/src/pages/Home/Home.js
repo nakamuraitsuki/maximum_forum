@@ -170,15 +170,17 @@ function Home() {
           <Link to="/login">ログイン</Link>
         )}
       </nav>
-      <form onSubmit={handleSubmit} className="create-thread-form">
-        <input
-          value={threadName}
-          onChange={(e) => setThreadName(e.target.value)}
-          placeholder="スレッド名"
-          required
-        ></input>
-        <button type="submit">作成</button>
-      </form>
+      <div className="create-thread-form">
+        <form onSubmit={handleSubmit}>
+          <input
+            value={threadName}
+            onChange={(e) => setThreadName(e.target.value)}
+            placeholder="スレッド名"
+            required
+          ></input>
+          <button type="submit">作成</button>
+        </form>
+      </div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
           <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
