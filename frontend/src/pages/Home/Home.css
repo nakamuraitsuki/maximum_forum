@@ -98,6 +98,10 @@
   font-size: 1rem;
   color: #333;
   font-weight: 600;
+  width: 45ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .thread-info {
