@@ -49,9 +49,10 @@ function Home() {
     }
   }, []);
 
-  const getThreads = async (page) => {
+  const getThreads = async (page, searchKeyword) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/threads?page=${page}`);
+      console.log("searchKeyword:",searchKeyword);
+      const response = await fetch(`http://localhost:8080/api/threads?page=${page}&keyword=${searchKeyword}`);
       if (!response.ok) {
         throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
@@ -135,15 +136,20 @@ function Home() {
   };
 
   useEffect(() => {
-    getThreads(page);
+    getThreads(page, searchKeyword);
   }, [getTrigger]);
 
   const handleSearch = (event) => {
     event.preventDefault();
+    setPage(1);
+    getThreads(page, searchKeyword);
   };
 
   const handleReset = () => {
     setSearchKeyword("");
+    setPage(1);
+    getThreads(page, "");
+    console.log("リセット後に取得");
   };
 
   const handleSubmit = (event) => {
@@ -153,7 +159,7 @@ function Home() {
   };
   //ページ遷移関数
   const handlePageChange = (e, newPage) => {
-    getThreads(newPage);
+    getThreads(newPage, searchKeyword);
     setPage(newPage);
   }
   //ページネーション
@@ -208,7 +214,12 @@ function Home() {
       <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索"/>
+          <input
+            type="text"
+            placeholder="スレッド検索"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
           <button type="button" onClick={handleReset}>
             <MdClear />
           </button>
