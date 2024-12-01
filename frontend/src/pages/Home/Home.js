@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import usePagination from '@mui/material/usePagination';
 import { MdClear } from "react-icons/md";
 import { MdSearch } from "react-icons/md";
+import { MdArrowBackIos } from "react-icons/md";
+import { MdArrowForwardIos } from "react-icons/md";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
@@ -184,9 +186,9 @@ function Home() {
       case 'end-ellipsis':
         return '...';
       case 'previous':
-        return 'previous';
+        return <MdArrowBackIos />;
       case 'next':
-        return 'next';
+        return <MdArrowForwardIos />;
       default:
         return page;
     }
@@ -261,8 +263,7 @@ function Home() {
         </div>
       )}
       <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
-      {/*TODO：ページネーションのデザイン。とりあえず最低限動作が分かる程度のCSSを直で書き込んでいます。*/}
-      <div style={{display: 'flex', justifyContent: 'center'}}>
+      <div className="pagination-container">
         {items.map(({ type, page, selected, disabled, onClick}, index) => (
             <button
               key={index}
@@ -270,7 +271,7 @@ function Home() {
               selected={selected}
               disabled={disabled}
               type="button"
-              style={selected ? {backgroundColor: 'red'}:{}}
+              className={`pagination-button ${selected ? 'selected' : ''}`}
             >
             {getLabel(type, page)}
             </button>
