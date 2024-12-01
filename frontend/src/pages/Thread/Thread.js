@@ -145,7 +145,9 @@ function Thread() {
 
   return (
     <div className="container">
-      <h1>Maximum掲示板</h1>
+      <Link to="/" className="home-link">
+        <h1>Maximum掲示板</h1>
+      </Link>
       <nav className="navigation">
         <Link to="/register">新規登録</Link>
         {loggedInUser ? (
@@ -164,14 +166,21 @@ function Thread() {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="コメントを入力してください"
             required
-            ></textarea>
+          ></textarea>
           <button type="submit">投稿</button>
         </form>
-        <span>コメント数:{commentCount.commentCount}/{commentCount.maxComment}</span>
-        {isLimitReached && <span className="comment-limited">コメント上限に達しています</span>}
+        <span>
+          コメント数:{commentCount.commentCount}/{commentCount.maxComment}
+        </span>
+        {isLimitReached && (
+          <span className="comment-limited">コメント上限に達しています</span>
+        )}
         {comments.map((comment) => (
           <div key={comment.id} className="comment">
-            <span className="id">{comments.length - comments.indexOf(comment)}{"."}</span>
+            <span className="id">
+              {comments.length - comments.indexOf(comment)}
+              {"."}
+            </span>
             <span className="name">{comment.name}</span>
             <p className="created-at">
               {new Date(comment.created_at).toLocaleString()}
