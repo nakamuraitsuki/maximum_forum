@@ -53,9 +53,11 @@ const (
 		ORDER BY comments.created_at DESC
 	`
 	//スレッド数上限
-	maxThread = 500
+	maxThread 	= 500
 	//コメント数上限
 	maxComments = 1000
+	//ページネーション表示件数
+	pagination 	= 5
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
@@ -91,8 +93,11 @@ type CommentResponse struct {
 }
 
 type ThreadResponse struct {
-	Threads		[]Thread	`json:"threads"`
-	IsLimitReached	bool	`json:"is_limit_reached"`
+	Threads			[]Thread	`json:"threads"`
+	IsLimitReached	bool		`json:"is_limit_reached"`
+	MaxThreads		int			`json:"max_threads"`
+	ThreadCount		int 		`json:"thread_count"`
+	PageCount		int			`json:"page_count"`
 }
 
 func init() {
@@ -402,9 +407,31 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
-func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
+func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	//現在のページ数の取得
+	queryParams := r.URL.Query();
+	pageStr := queryParams.Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		responseJSON(w, http.StatusInternalServerError, "Invalid page")
+	}
+
+	//現在のスレッド数の取得
+	var threadCount int 
+	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	
 	var threads []Thread
-	rows, err := db.Query("SELECT * FROM threads")
+	rows, err := db.Query("SELECT * FROM threads LIMIT ? OFFSET ?", pagination, (page-1)*pagination)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
 		return
@@ -421,25 +448,17 @@ func getThreads(w http.ResponseWriter, _ *http.Request, db *sql.DB) {
 		threads = append(threads, thread)
 	}
 
-	//現在のスレッド数の取得
-	var threadCount int 
-	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
-	if err != nil{
-		if err == sql.ErrNoRows {
-			// スレッドが存在しない場合
-			threadCount = 0
-		} else {
-			// その他のエラー
-			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
-			return
-		}
-	}
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
+	//ページ数を保持(繰り上げ)
+	pageCount := (threadCount+pagination-1)/pagination
 	//コメント配列と上限に達しているかどうかをまとめる
 	response := ThreadResponse{
 		Threads: threads,
 		IsLimitReached: isLimitReached,
+		MaxThreads: maxThread,
+		ThreadCount: threadCount,
+		PageCount: pageCount,
 	}
 	responseJSON(w, http.StatusOK, response)
 }
