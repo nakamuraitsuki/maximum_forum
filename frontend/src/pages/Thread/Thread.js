@@ -167,7 +167,8 @@ function Thread() {
             ></textarea>
           <button type="submit">投稿</button>
         </form>
-        <p>コメント数:{commentCount.commentCount}/{commentCount.maxComment}</p>
+        <span>コメント数:{commentCount.commentCount}/{commentCount.maxComment}</span>
+        {isLimitReached && <span className="comment-limited">コメント上限に達しています</span>}
         {comments.map((comment) => (
           <div key={comment.id} className="comment">
             <span className="id">{comments.length - comments.indexOf(comment)}{"."}</span>
@@ -178,7 +179,6 @@ function Thread() {
             <p className="message">{comment.message}</p>
           </div>
         ))}
-        <div>{isLimitReached && <p>コメント上限に達しています</p>}</div>
       </div>
     </div>
   );

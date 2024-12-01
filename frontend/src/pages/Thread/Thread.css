@@ -28,6 +28,11 @@
   border-bottom: 1px solid #ddd;
 }
 
+.comment-limited {
+  color: red;
+  margin-left: 0.5rem;
+}
+
 .comment-form {
   align-items: center;
   display: grid;
