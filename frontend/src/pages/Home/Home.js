@@ -208,7 +208,7 @@ function Home() {
       <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
+          <input type="text" placeholder="スレッド検索" />
           <button type="button" onClick={handleReset}>
             <MdClear />
           </button>
