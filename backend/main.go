@@ -441,7 +441,6 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	var keyword string
 	keyword = queryParams.Get("keyword")
-	fmt.Println(keyword)
 	if(keyword == ""){
 		keyword = "%"
 	}else{
@@ -483,7 +482,6 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 	}
-	fmt.Println(filteredThreadCount)
 
 	getQuery := `
 	SELECT 
@@ -521,7 +519,13 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
 	//ページ数を保持(繰り上げ)
-	pageCount := min((threadCount+pagination-1)/pagination, (filteredThreadCount+pagination -1)/pagination)
+	// pageCount := min((threadCount+pagination-1)/pagination, (filteredThreadCount+pagination -1)/pagination)
+	var pageCount int
+	if threadCount < filteredThreadCount {
+		pageCount = (threadCount + pagination - 1) / pagination
+	} else {
+		pageCount = (filteredThreadCount + pagination - 1) / pagination
+	}
 	//コメント配列と上限に達しているかどうかをまとめる
 	response := ThreadResponse{
 		Threads: threads,
