@@ -464,6 +464,7 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	LEFT JOIN comments 
 	ON threads.id = comments.thread_id
 	GROUP BY threads.id
+	ORDER BY threads.created_at DESC
 	LIMIT ? OFFSET ?`
 
 	var threads []ThreadInfo

@@ -252,6 +252,9 @@ function Home() {
                 <span className="thread-date">
                   {new Date(thread.created_at).toLocaleString()}
                 </span>
+                <span>
+                  総コメント数:{thread.comment_count}
+                </span>
               </div>
             </div>
           ))}
