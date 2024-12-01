@@ -94,14 +94,6 @@ type CommentResponse struct {
 	CommentCount	int			`json:"comment_count"`
 }
 
-type ThreadResponse struct {
-	Threads			[]Thread	`json:"threads"`
-	IsLimitReached	bool		`json:"is_limit_reached"`
-	MaxThreads		int			`json:"max_threads"`
-	ThreadCount		int 		`json:"thread_count"`
-	PageCount		int			`json:"page_count"`
-}
-
 func init() {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
@@ -422,6 +414,22 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
+type ThreadTnfo struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	OwnerID   string `json:"owner_id"`
+	CommentCount int `json:"comment_count"`
+}
+
+type ThreadResponse struct {
+	Threads			[]ThreadInfo	`json:"threads"`
+	IsLimitReached	bool		`json:"is_limit_reached"`
+	MaxThreads		int			`json:"max_threads"`
+	ThreadCount		int 		`json:"thread_count"`
+	PageCount		int			`json:"page_count"`
+}
+
 func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//現在のページ数の取得
 	queryParams := r.URL.Query();
@@ -445,8 +453,16 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 	
-	var threads []Thread
-	rows, err := db.Query("SELECT * FROM threads LIMIT ? OFFSET ?", pagination, (page-1)*pagination)
+	getQuery := "SELECT"+
+	"threads.id, threads.name, threads.created_at, threads.owner_id, COUNT(comments.id) AS comment_count"+
+	"FROM threads"+
+	"LEFT JOIN comments"+
+	"ON threads.id = comments.thread_id"+
+	"GROUP BY threads.id"+
+	"LIMIT ? OFFSET ?"
+
+	var threads []ThreadInfo
+	rows, err := db.Query(getQuery, pagination, (page-1)*pagination)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
 		return
@@ -454,8 +470,8 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var thread Thread
-		err := rows.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID)
+		var thread ThreadInfo
+		err := rows.Scan(&thread.ID, &thread.Name, &thread.CreatedAt, &thread.OwnerID, &thread.CommentCount)
 		if err != nil {
 			responseJSON(w, http.StatusInternalServerError, "Failed to parse threads data")
 			return
