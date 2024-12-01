@@ -199,18 +199,20 @@ function Home() {
               <Link to={`/thread/${thread.id}`}>
                 <span className="thread-name">{thread.name}</span>
               </Link>
-              <span className="thread-date">
-                {new Date(thread.created_at).toLocaleString()}
-              </span>
-              {loggedInUser.id == String(thread.owner_id) && (
-                <button
-                  type="button"
-                  onClick={() => deleteThread(thread.id)}
-                  className="delete-button"
-                >
-                  削除
-                </button>
-              )}
+              <div className="thread-info">
+                {loggedInUser.id == String(thread.owner_id) && (
+                  <button
+                    type="button"
+                    onClick={() => deleteThread(thread.id)}
+                    className="delete-button"
+                  >
+                    削除
+                  </button>
+                )}
+                <span className="thread-date">
+                  {new Date(thread.created_at).toLocaleString()}
+                </span>
+              </div>
             </div>
           ))}
         </div>
