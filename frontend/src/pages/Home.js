@@ -1,6 +1,7 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
+import usePagination from '@mui/material/usePagination';
 
 function Home() {
   const [threadName, setThreadName] = useState("");
@@ -161,6 +162,17 @@ function Home() {
     postThread(threadName);
     setThreadName("");
   };
+  const handlePageChange = (e, newPage) => {
+    getThreads(newPage);
+    setPage(newPage);
+  }
+  const { items } = usePagination({
+    count: threadsInfo.PageCount, //総ページ数
+    page: page,                   //現在いるページ
+    onChange: handlePageChange,   //ページ遷移関数
+    siblingCount: 1,
+    boundaryCount: 1,
+  });
 
   return (
     <div className="home">
@@ -204,6 +216,22 @@ function Home() {
         </div>
       )}
       <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
+      {/*TODO：ページネーション。仮のCSSを適応しているので、正規のものを適応してからはがしてください*/}
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        {items.map(({ type, page, selected, disabled, onClick}, index) => (
+            <button
+              key={index}
+              onClick={onClick}
+              selected={selected}
+              disabled={disabled}
+              type="button"
+            >
+            {type === 'start-ellipsis' || type === 'end-ellipsis'
+              ? '...'
+              :page}
+            </button>
+        ))}
+      </div>
       <form onSubmit={handleSubmit} className="comment-form">
         <textarea
           value={threadName}
