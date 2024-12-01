@@ -250,22 +250,29 @@ function Home() {
             <div key={thread.id} className="thread-container">
               <Link to={`/thread/${thread.id}`}>
                 <span className="thread-name">{thread.name}</span>
-                {loggedInUser.id == String(thread.owner_id) && (
-                  <button
-                    type="button"
-                    onClick={() => deleteThread(thread.id)}
-                    className="delete-button"
-                  >
-                    削除
-                  </button>
-                )}
                 <span className="thread-info">
-                  {thread.comment_count}/{threadsInfo.MaxComments}
-                </span>
-                <span className="thread-info">
+                  コメント数:{thread.comment_count}/{threadsInfo.MaxComments}・
                   {new Date(thread.created_at).toLocaleString()}
                 </span>
               </Link>
+              {loggedInUser.id == String(thread.owner_id) ? (
+                <button
+                  type="button"
+                  onClick={() => deleteThread(thread.id)}
+                  className="delete-button"
+                >
+                  削除
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => deleteThread(thread.id)}
+                  className="delete-button-disabled"
+                  disabled
+                >
+                  削除
+                </button>
+              )}
             </div>
           ))}
         </div>
