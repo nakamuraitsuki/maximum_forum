@@ -414,7 +414,7 @@ func createThread(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	responseJSON(w, http.StatusCreated, "Thread created successfully")
 }
 
-type ThreadTnfo struct {
+type ThreadInfo struct {
 	ID        int    `json:"id"`
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
