@@ -1,6 +1,6 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect } from "react";
 import usePagination from '@mui/material/usePagination';
 import { MdClear } from "react-icons/md";
 import { MdSearch } from "react-icons/md";
@@ -15,8 +15,6 @@ function Home() {
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
   const [searchKeyword, setSearchKeyword] = useState("");
-  const searchInputRef = useRef();
-  const allThreads = useMemo(() => threads, [threads]);
 
   const getUsernameFromToken = (token) => {
     try {
@@ -140,23 +138,13 @@ function Home() {
     getThreads(page);
   }, [getTrigger]);
 
-  const filteredThreads = useMemo(() => {
-    return allThreads.filter((thread) =>
-      thread.name.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
-  }, [allThreads, searchKeyword]);
-
   const handleSearch = (event) => {
     event.preventDefault();
-    const keyword = searchInputRef.current.value;
     setSearchKeyword(keyword);
   };
 
   const handleReset = () => {
     setSearchKeyword("");
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
   };
 
   const handleSubmit = (event) => {
@@ -221,7 +209,7 @@ function Home() {
       <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
+          <input type="text" placeholder="スレッド検索"/>
           <button type="button" onClick={handleReset}>
             <MdClear />
           </button>
