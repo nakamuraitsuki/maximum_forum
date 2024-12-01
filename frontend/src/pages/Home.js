@@ -174,6 +174,20 @@ function Home() {
     boundaryCount: 1,
   });
 
+  const getLabel = (type, page) => {
+    switch (type) {
+      case 'start-ellipsis':
+      case 'end-ellipsis':
+        return '...';
+      case 'previous':
+        return 'previous';
+      case 'next':
+        return 'next';
+      default:
+        return page;
+    }
+  };
+
   return (
     <div className="home">
       <h1>Maximum掲示板</h1>
@@ -216,7 +230,7 @@ function Home() {
         </div>
       )}
       <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
-      {/*TODO：ページネーション。仮のCSSを適応しているので、正規のものを適応してからはがしてください*/}
+      {/*TODO：ページネーションのデザイン。とりあえず最低限動作が分かる程度のCSSを直で書き込んでいます。*/}
       <div style={{display: 'flex', justifyContent: 'center'}}>
         {items.map(({ type, page, selected, disabled, onClick}, index) => (
             <button
@@ -225,10 +239,9 @@ function Home() {
               selected={selected}
               disabled={disabled}
               type="button"
+              style={selected ? {backgroundColor: 'red'}:{}}
             >
-            {type === 'start-ellipsis' || type === 'end-ellipsis'
-              ? '...'
-              :page}
+            {getLabel(type, page)}
             </button>
         ))}
       </div>
