@@ -62,9 +62,14 @@
   }
 }
 
-.thread {
+.thread-container {
   border-bottom: 1px solid #ddd;
   padding: 1rem;
+}
+
+.thread-date {
+  font-size: 0.8rem;
+  color: #777;
 }
 
 .delete-button {
@@ -74,7 +79,6 @@
   border-radius: 4px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  width: 100px;
 }
 
 .delete-button:hover {

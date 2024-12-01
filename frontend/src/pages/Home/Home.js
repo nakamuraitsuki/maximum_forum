@@ -195,12 +195,13 @@ function Home() {
       ) : (
         <div className="thread-list">
           {filteredThreads.map((thread) => (
-            <div key={thread.id} className="thread">
+            <div key={thread.id} className="thread-container">
               <Link to={`/thread/${thread.id}`}>
-                <span>
-                  {thread.name} {new Date(thread.created_at).toLocaleString()}
-                </span>
+                <span className="thread-name">{thread.name}</span>
               </Link>
+              <span className="thread-date">
+                {new Date(thread.created_at).toLocaleString()}
+              </span>
               {loggedInUser.id == String(thread.owner_id) && (
                 <button
                   type="button"
