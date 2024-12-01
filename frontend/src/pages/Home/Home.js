@@ -1,6 +1,6 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect } from "react";
 import usePagination from '@mui/material/usePagination';
 import { MdClear } from "react-icons/md";
 import { MdSearch } from "react-icons/md";
@@ -140,23 +140,12 @@ function Home() {
     getThreads(page);
   }, [getTrigger]);
 
-  const filteredThreads = useMemo(() => {
-    return allThreads.filter((thread) =>
-      thread.name.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
-  }, [allThreads, searchKeyword]);
-
   const handleSearch = (event) => {
     event.preventDefault();
-    const keyword = searchInputRef.current.value;
-    setSearchKeyword(keyword);
   };
 
   const handleReset = () => {
     setSearchKeyword("");
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
   };
 
   const handleSubmit = (event) => {
