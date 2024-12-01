@@ -205,7 +205,7 @@ function Home() {
   return (
     <div className="home">
       <Link to="/" className="home-link">
-        <h1>Maximum掲示板</h1>
+        Maximum掲示板
       </Link>
       <img src="/images/maximum-logo.png" alt="maximum-logo" className="logo" />
       {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
