@@ -1,16 +1,23 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
-import usePagination from '@mui/material/usePagination';
+import usePagination from "@mui/material/usePagination";
 import { MdClear } from "react-icons/md";
 import { MdSearch } from "react-icons/md";
+import { MdArrowBackIos } from "react-icons/md";
+import { MdArrowForwardIos } from "react-icons/md";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [page, setPage] = useState(1);
   //現在のスレッド関連情報（スレッド上限、現在のスレッド数、現在の総ページ数）
-  const [threadsInfo, setThreadsInfo] = useState({MaxThreads:0, ThreadCount:0, PageCount:0});
+  const [threadsInfo, setThreadsInfo] = useState({
+    MaxThreads: 0,
+    ThreadCount: 0,
+    PageCount: 0,
+    MaxComments: 0,
+  });
   const [isLimitReached, setIsLimitReached] = useState(false);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
@@ -53,7 +60,9 @@ function Home() {
 
   const getThreads = async (page) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/threads?page=${page}`);
+      const response = await fetch(
+        `http://localhost:8080/api/threads?page=${page}`
+      );
       if (!response.ok) {
         throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
@@ -63,9 +72,10 @@ function Home() {
       else setThreads([]);
       setIsLimitReached(data.is_limit_reached);
       setThreadsInfo({
-        MaxThread:Number(data.max_threads), 
-        ThreadCount: Number(data.thread_count), 
-        PageCount: Number(data.page_count)
+        MaxThread: Number(data.max_threads),
+        ThreadCount: Number(data.thread_count),
+        PageCount: Number(data.page_count),
+        MaxComments: Number(data.max_comments),
       });
     } catch (error) {
       console.error(error.message);
@@ -168,25 +178,25 @@ function Home() {
   const handlePageChange = (e, newPage) => {
     getThreads(newPage);
     setPage(newPage);
-  }
+  };
   //ページネーション
   const { items } = usePagination({
     count: threadsInfo.PageCount, //総ページ数
-    page: page,                   //現在いるページ
-    onChange: handlePageChange,   //ページ遷移関数
+    page: page, //現在いるページ
+    onChange: handlePageChange, //ページ遷移関数
     siblingCount: 1,
     boundaryCount: 1,
   });
   //表示ラベル
   const getLabel = (type, page) => {
     switch (type) {
-      case 'start-ellipsis':
-      case 'end-ellipsis':
-        return '...';
-      case 'previous':
-        return 'previous';
-      case 'next':
-        return 'next';
+      case "start-ellipsis":
+      case "end-ellipsis":
+        return "...";
+      case "previous":
+        return <MdArrowBackIos />;
+      case "next":
+        return <MdArrowForwardIos />;
       default:
         return page;
     }
@@ -195,7 +205,7 @@ function Home() {
   return (
     <div className="home">
       <Link to="/" className="home-link">
-        <h1>Maximum掲示板</h1>
+        Maximum掲示板
       </Link>
       <img src="/images/maximum-logo.png" alt="maximum-logo" className="logo" />
       {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
@@ -218,7 +228,9 @@ function Home() {
           <button type="submit">作成</button>
         </form>
       </div>
-      <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
+      <div className="thread-limited">
+        {isLimitReached && <span>スレッド数の上限に達しています</span>}
+      </div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
           <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
@@ -238,42 +250,46 @@ function Home() {
             <div key={thread.id} className="thread-container">
               <Link to={`/thread/${thread.id}`}>
                 <span className="thread-name">{thread.name}</span>
-              </Link>
-              <div className="thread-info">
-                {loggedInUser.id == String(thread.owner_id) && (
-                  <button
-                    type="button"
-                    onClick={() => deleteThread(thread.id)}
-                    className="delete-button"
-                  >
-                    削除
-                  </button>
-                )}
-                <span className="thread-date">
+                <span className="thread-info">
+                  コメント数:{thread.comment_count}/{threadsInfo.MaxComments}・
                   {new Date(thread.created_at).toLocaleString()}
                 </span>
-                <span>
-                  総コメント数:{thread.comment_count}
-                </span>
-              </div>
+              </Link>
+              {loggedInUser.id == String(thread.owner_id) ? (
+                <button
+                  type="button"
+                  onClick={() => deleteThread(thread.id)}
+                  className="delete-button"
+                >
+                  削除
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => deleteThread(thread.id)}
+                  className="delete-button-disabled"
+                  disabled
+                >
+                  削除
+                </button>
+              )}
             </div>
           ))}
         </div>
       )}
       <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
-      {/*TODO：ページネーションのデザイン。とりあえず最低限動作が分かる程度のCSSを直で書き込んでいます。*/}
-      <div style={{display: 'flex', justifyContent: 'center'}}>
-        {items.map(({ type, page, selected, disabled, onClick}, index) => (
-            <button
-              key={index}
-              onClick={onClick}
-              selected={selected}
-              disabled={disabled}
-              type="button"
-              style={selected ? {backgroundColor: 'red'}:{}}
-            >
+      <div className="pagination-container">
+        {items.map(({ type, page, selected, disabled, onClick }, index) => (
+          <button
+            key={index}
+            onClick={onClick}
+            selected={selected}
+            disabled={disabled}
+            type="button"
+            className={`pagination-button ${selected ? "selected" : ""}`}
+          >
             {getLabel(type, page)}
-            </button>
+          </button>
         ))}
       </div>
     </div>

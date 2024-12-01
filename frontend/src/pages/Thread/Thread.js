@@ -146,7 +146,7 @@ function Thread() {
   return (
     <div className="container">
       <Link to="/" className="home-link">
-        <h1>Maximum掲示板</h1>
+        Maximum掲示板
       </Link>
       <nav className="navigation">
         <Link to="/register">新規登録</Link>
