@@ -57,7 +57,7 @@ const (
 	//コメント数上限
 	maxComments = 1000
 	//ページネーション表示件数
-	pagenation 	= 10
+	pagenation 	= 5
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
