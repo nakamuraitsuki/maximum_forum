@@ -9,10 +9,12 @@ import (
 	"time"
 	"strconv"
 	"strings"
+	"os"
 
 	"github.com/golang-jwt/jwt/v5" // go get github.com/golang-jwt/jwt/v5
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt" // go get golang.org/x/crypto/bcrypt
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -60,7 +62,7 @@ const (
 	pagination 	= 5
 )
 
-var jwtKey = []byte("secret_key")    // Replace with a secure key
+var jwtKey []byte    // Replace with a secure key
 const jwtExpiryTime = time.Hour * 24 // Token valid for 24 hours
 
 type User struct {
@@ -116,6 +118,19 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	//.envファイルの読み込み
+	err = godotenv.Load("../.env")
+	if err != nil {
+		fmt.Printf(".env読み込み失敗: %v", err)
+	}
+	//jwtKeyを環境変数から読み取り
+	jwtKeyStr, ok := os.LookupEnv("JWT_SECRET_KEY")
+	if !ok {
+		fmt.Println("JWT_SECRET_KEY is not set")
+	}
+	//環境変数を[]byte型に変換
+	jwtKey = []byte(jwtKeyStr)
 
 	_, err = db.Exec(createUserTable)
 	if err != nil {
