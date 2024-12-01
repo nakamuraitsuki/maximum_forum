@@ -6,6 +6,8 @@ function Home() {
   const [threadName, setThreadName] = useState("");
   const [threads, setThreads] = useState([]);
   const [page, setPage] = useState(1);
+  //現在のスレッド関連情報（スレッド上限、現在のスレッド数、現在の総ページ数）
+  const [threadsInfo, setThreadsInfo] = useState({MaxThreads:0, ThreadCount:0, PageCount:0});
   const [isLimitReached, setIsLimitReached] = useState(false);
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
@@ -46,7 +48,7 @@ function Home() {
     }
   }, []);
 
-  const getThreads = async () => {
+  const getThreads = async (page) => {
     try {
       const response = await fetch(`http://localhost:8080/api/threads?page=${page}`);
       if (!response.ok) {
@@ -57,6 +59,11 @@ function Home() {
       if (data.threads != null) setThreads(data.threads);
       else setThreads([]);
       setIsLimitReached(data.is_limit_reached);
+      setThreadsInfo({
+        MaxThread:Number(data.max_threads), 
+        ThreadCount: Number(data.thread_count), 
+        PageCount: Number(data.page_count)
+      });
     } catch (error) {
       console.error(error.message);
     }
@@ -127,7 +134,7 @@ function Home() {
   };
 
   useEffect(() => {
-    getThreads();
+    getThreads(page);
   }, [getTrigger]);
 
   const filteredThreads = useMemo(() => {
