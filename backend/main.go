@@ -453,13 +453,18 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 	
-	getQuery := "SELECT"+
-	"threads.id, threads.name, threads.created_at, threads.owner_id, COUNT(comments.id) AS comment_count"+
-	"FROM threads"+
-	"LEFT JOIN comments"+
-	"ON threads.id = comments.thread_id"+
-	"GROUP BY threads.id"+
-	"LIMIT ? OFFSET ?"
+	getQuery := `
+	SELECT 
+		threads.id, 
+		threads.name, 
+		threads.created_at, 
+		threads.owner_id, 
+		COUNT(comments.id) AS comment_count
+	FROM threads
+	LEFT JOIN comments 
+	ON threads.id = comments.thread_id
+	GROUP BY threads.id
+	LIMIT ? OFFSET ?`
 
 	var threads []ThreadInfo
 	rows, err := db.Query(getQuery, pagination, (page-1)*pagination)
