@@ -208,7 +208,7 @@ function Home() {
       <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索" />
+          <input type="text" placeholder="スレッド検索"/>
           <button type="button" onClick={handleReset}>
             <MdClear />
           </button>
@@ -238,6 +238,9 @@ function Home() {
                 )}
                 <span className="thread-date">
                   {new Date(thread.created_at).toLocaleString()}
+                </span>
+                <span>
+                  総コメント数:{thread.comment_count}
                 </span>
               </div>
             </div>
