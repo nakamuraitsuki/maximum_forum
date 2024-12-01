@@ -164,10 +164,12 @@ function Home() {
     postThread(threadName);
     setThreadName("");
   };
+  //ページ遷移関数
   const handlePageChange = (e, newPage) => {
     getThreads(newPage);
     setPage(newPage);
   }
+  //ページネーション
   const { items } = usePagination({
     count: threadsInfo.PageCount, //総ページ数
     page: page,                   //現在いるページ
@@ -175,7 +177,7 @@ function Home() {
     siblingCount: 1,
     boundaryCount: 1,
   });
-
+  //表示ラベル
   const getLabel = (type, page) => {
     switch (type) {
       case 'start-ellipsis':
@@ -271,15 +273,6 @@ function Home() {
             </button>
         ))}
       </div>
-      <form onSubmit={handleSubmit} className="comment-form">
-        <textarea
-          value={threadName}
-          onChange={(e) => setThreadName(e.target.value)}
-          placeholder="スレッド名"
-          required
-        ></textarea>
-        <button type="submit">スレッドを作成</button>
-      </form>
     </div>
   );
 }
