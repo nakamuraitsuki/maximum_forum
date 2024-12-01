@@ -181,7 +181,7 @@ function Home() {
           <button type="submit">作成</button>
         </form>
       </div>
-      <div className="thread-limited">{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
+      <div className="thread-limited">{isLimitReached && <span>スレッド数の上限に達しています</span>}</div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
           <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
