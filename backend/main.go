@@ -9,10 +9,12 @@ import (
 	"time"
 	"strconv"
 	"strings"
+	"os"
 
 	"github.com/golang-jwt/jwt/v5" // go get github.com/golang-jwt/jwt/v5
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt" // go get golang.org/x/crypto/bcrypt
+	"github.com/joho/godotenv"
 )
 
 const (
