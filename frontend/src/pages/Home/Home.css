@@ -4,6 +4,12 @@
   margin: 0 auto;
 }
 
+.thread-limited {
+  color: red;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1.5rem;
+}
+
 .home {
   padding: 2rem;
   background-color: #ffffff;
@@ -30,9 +36,8 @@
 }
 
 .create-thread-form {
-  border-bottom: 1px solid #ddd;
   padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  
   display: flex;
   justify-content: center;
   width: 100%;
