@@ -1,5 +1,12 @@
 /* Login.css */
 
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 .login {
   width: 360px;
   padding: 2rem;

@@ -74,28 +74,30 @@ export default function Register() {
   };
 
   return (
-    <div className="register">
-      <h1>新規登録</h1>
-      <nav className="register-nav">
-        <Link to="/">スレッド一覧</Link>
-        <Link to="/login">ログイン</Link>
-      </nav>
-      <form onSubmit={handleSubmit} className="register-form">
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">登録</button>
-      </form>
+    <div className="register-container">
+      <div className="register">
+        <h1>新規登録</h1>
+        <nav className="register-nav">
+          <Link to="/">スレッド一覧</Link>
+          <Link to="/login">ログイン</Link>
+        </nav>
+        <form onSubmit={handleSubmit} className="register-form">
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">登録</button>
+        </form>
+      </div>
     </div>
   );
 }

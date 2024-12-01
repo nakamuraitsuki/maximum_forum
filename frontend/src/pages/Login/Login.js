@@ -42,28 +42,30 @@ export default function Login() {
   };
 
   return (
-    <div className="login">
-      <h1>ログイン</h1>
-      <nav className="login-nav">
-        <Link to="/">スレッド一覧</Link>
-        <Link to="/register">新規登録</Link>
-      </nav>
-      <form onSubmit={handleSubmit} className="login-form">
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">ログイン</button>
-      </form>
+    <div className="login-container">
+      <div className="login">
+        <h1>ログイン</h1>
+        <nav className="login-nav">
+          <Link to="/">スレッド一覧</Link>
+          <Link to="/register">新規登録</Link>
+        </nav>
+        <form onSubmit={handleSubmit} className="login-form">
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">ログイン</button>
+        </form>
+      </div>
     </div>
   );
 }
