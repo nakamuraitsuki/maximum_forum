@@ -5,7 +5,7 @@ import Login from "./pages/Login/Login";
 import Logout from "./pages/Logout/Logout";
 import Register from "./pages/Register/Register";
 import Thread from "./pages/Thread/Thread";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   return (
