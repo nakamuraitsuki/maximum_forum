@@ -3,6 +3,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  background-color: #b8ebfd;
   font-family: Arial, sans-serif;
 }
 
@@ -10,8 +11,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   background-color: #b8ebfd;
+  min-height: 100vh;
+
 }
 
 .home {
@@ -26,6 +28,7 @@ h1 {
   font-size: 1.8rem;
   color: #333;
   text-align: center;
+  background-color: #b8ebfd;
   margin-bottom: 1.5rem;
 }
 
@@ -78,6 +81,7 @@ h1 {
   padding: 0.75rem;
   font-size: 1rem;
   border: 1px solid #ddd;
+  background-color: #f9f9f9;
   border-radius: 4px;
   resize: vertical;
   transition: border-color 0.2s ease;

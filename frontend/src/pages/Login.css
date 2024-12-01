@@ -11,13 +11,13 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background-color: #b8ebfd;
 }
 
 .login {
   width: 360px;
   padding: 2rem;
-  background-color: #ffffff;
+  background-color: #b8ebfd;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
@@ -25,7 +25,9 @@ body {
 
 h1 {
   font-size: 1.8rem;
-  color: #333;
+  padding: 0.75rem;
+  font-weight: 600;
+  color: #fff;
   margin-bottom: 1.5rem;
 }
 
