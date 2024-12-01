@@ -428,6 +428,7 @@ type ThreadResponse struct {
 	MaxThreads		int			`json:"max_threads"`
 	ThreadCount		int 		`json:"thread_count"`
 	PageCount		int			`json:"page_count"`
+	MaxComments		int			`json:"max_comments"`
 }
 
 func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -528,6 +529,7 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		MaxThreads: maxThread,
 		ThreadCount: threadCount,
 		PageCount: pageCount,
+		MaxComments: maxComments,
 	}
 	responseJSON(w, http.StatusOK, response)
 }

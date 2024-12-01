@@ -1,4 +1,5 @@
 .container {
+  display: grid;
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
@@ -7,7 +8,7 @@
 }
 
 .navigation {
-  margin: 1rem 0;
+  margin: 1rem auto;
   a {
     text-decoration: none;
     color: #1a73e8;
