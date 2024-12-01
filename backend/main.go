@@ -439,6 +439,13 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Invalid page")
 	}
+	var keyword string
+	keyword = queryParams.Get("keyword")
+	if(keyword == ""){
+		keyword = "%"
+	}else{
+		keyword = "%" + keyword + "%"
+	}
 
 	//現在のスレッド数の取得
 	var threadCount int 
@@ -453,7 +460,29 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 	}
-	
+
+	err = db.QueryRow("SELECT COUNT(*) FROM threads").Scan(&threadCount)
+	if err != nil{
+		if err == sql.ErrNoRows {
+			// スレッドが存在しない場合
+			threadCount = 0
+		} else {
+			// その他のエラー
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch comment count")
+			return
+		}
+	}
+	var filteredThreadCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM threads WHERE name LIKE ?", keyword).Scan(&filteredThreadCount)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			filteredThreadCount = 0
+		} else {
+			responseJSON(w, http.StatusInternalServerError, "Failed to fetch filtered commtent count")
+			return
+		}
+	}
+
 	getQuery := `
 	SELECT 
 		threads.id, 
@@ -464,12 +493,13 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	FROM threads
 	LEFT JOIN comments 
 	ON threads.id = comments.thread_id
+	WHERE threads.name LIKE ?
 	GROUP BY threads.id
 	ORDER BY threads.created_at DESC
 	LIMIT ? OFFSET ?`
 
 	var threads []ThreadInfo
-	rows, err := db.Query(getQuery, pagination, (page-1)*pagination)
+	rows, err := db.Query(getQuery, keyword, pagination, (page-1)*pagination)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
 		return
@@ -489,7 +519,13 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
 	//ページ数を保持(繰り上げ)
-	pageCount := (threadCount+pagination-1)/pagination
+	// pageCount := min((threadCount+pagination-1)/pagination, (filteredThreadCount+pagination -1)/pagination)
+	var pageCount int
+	if threadCount < filteredThreadCount {
+		pageCount = (threadCount + pagination - 1) / pagination
+	} else {
+		pageCount = (filteredThreadCount + pagination - 1) / pagination
+	}
 	//コメント配列と上限に達しているかどうかをまとめる
 	response := ThreadResponse{
 		Threads: threads,

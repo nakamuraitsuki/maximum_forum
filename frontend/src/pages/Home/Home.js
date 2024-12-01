@@ -1,7 +1,7 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
-import usePagination from "@mui/material/usePagination";
+import { useState, useEffect } from "react";
+import usePagination from '@mui/material/usePagination';
 import { MdClear } from "react-icons/md";
 import { MdSearch } from "react-icons/md";
 import { MdArrowBackIos } from "react-icons/md";
@@ -22,8 +22,6 @@ function Home() {
   const [getTrigger, setGetTrigger] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState({ id: "", name: "" });
   const [searchKeyword, setSearchKeyword] = useState("");
-  const searchInputRef = useRef();
-  const allThreads = useMemo(() => threads, [threads]);
 
   const getUsernameFromToken = (token) => {
     try {
@@ -58,11 +56,10 @@ function Home() {
     }
   }, []);
 
-  const getThreads = async (page) => {
+  const getThreads = async (page, searchKeyword) => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/threads?page=${page}`
-      );
+      console.log("searchKeyword:",searchKeyword);
+      const response = await fetch(`http://localhost:8080/api/threads?page=${page}&keyword=${searchKeyword}`);
       if (!response.ok) {
         throw new Error(`スレッド取得エラー/status:${response.status}`);
       }
@@ -147,26 +144,20 @@ function Home() {
   };
 
   useEffect(() => {
-    getThreads(page);
+    getThreads(page, searchKeyword);
   }, [getTrigger]);
-
-  const filteredThreads = useMemo(() => {
-    return allThreads.filter((thread) =>
-      thread.name.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
-  }, [allThreads, searchKeyword]);
 
   const handleSearch = (event) => {
     event.preventDefault();
-    const keyword = searchInputRef.current.value;
-    setSearchKeyword(keyword);
+    setPage(1);
+    getThreads(page, searchKeyword);
   };
 
   const handleReset = () => {
     setSearchKeyword("");
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
+    setPage(1);
+    getThreads(page, "");
+    console.log("リセット後に取得");
   };
 
   const handleSubmit = (event) => {
@@ -176,7 +167,7 @@ function Home() {
   };
   //ページ遷移関数
   const handlePageChange = (e, newPage) => {
-    getThreads(newPage);
+    getThreads(newPage, searchKeyword);
     setPage(newPage);
   };
   //ページネーション
@@ -233,7 +224,12 @@ function Home() {
       </div>
       <div className="thread-filter">
         <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
+          <input
+            type="text"
+            placeholder="スレッド検索"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
           <button type="button" onClick={handleReset}>
             <MdClear />
           </button>
@@ -242,11 +238,11 @@ function Home() {
           </button>
         </form>
       </div>
-      {filteredThreads.length === 0 ? (
+      {threads.length === 0 ? (
         <p>スレッドがありません</p>
       ) : (
         <div className="thread-list">
-          {filteredThreads.map((thread) => (
+          {threads.map((thread) => (
             <div key={thread.id} className="thread-container">
               <Link to={`/thread/${thread.id}`}>
                 <span className="thread-name">{thread.name}</span>
