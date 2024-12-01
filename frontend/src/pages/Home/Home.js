@@ -217,11 +217,11 @@ function Home() {
           </button>
         </form>
       </div>
-      {filteredThreads.length === 0 ? (
+      {threads.length === 0 ? (
         <p>スレッドがありません</p>
       ) : (
         <div className="thread-list">
-          {filteredThreads.map((thread) => (
+          {threads.map((thread) => (
             <div key={thread.id} className="thread-container">
               <Link to={`/thread/${thread.id}`}>
                 <span className="thread-name">{thread.name}</span>
