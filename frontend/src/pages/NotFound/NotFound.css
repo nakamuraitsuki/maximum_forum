@@ -1,0 +1,10 @@
+.not-found {
+  height: 100vh;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.not-found p {
+  margin: 0.5rem;
+}
