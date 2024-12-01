@@ -9,6 +9,8 @@
   background-color: #ffffff;
   border-radius: 8px;
   display: grid;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .home-nav {
