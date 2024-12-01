@@ -95,7 +95,7 @@ type CommentResponse struct {
 type ThreadResponse struct {
 	Threads			[]Thread	`json:"threads"`
 	IsLimitReached	bool		`json:"is_limit_reached"`
-	MaxThread		int			`json:"max_threads"`
+	MaxThreads		int			`json:"max_threads"`
 	ThreadCount		int 		`json:"thread_count"`
 	PageCount		int			`json:"page_count"`
 }
@@ -456,7 +456,7 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	response := ThreadResponse{
 		Threads: threads,
 		IsLimitReached: isLimitReached,
-		MaxThread: maxThread,
+		MaxThreads: maxThread,
 		ThreadCount: threadCount,
 		PageCount: pageCount,
 	}
