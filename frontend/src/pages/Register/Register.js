@@ -77,7 +77,7 @@ export default function Register() {
     <div className="register">
       <h1>新規登録</h1>
       <nav className="register-nav">
-        <Link to="/">Home</Link>
+        <Link to="/">スレッド一覧</Link>
         <Link to="/login">ログイン</Link>
       </nav>
       <form onSubmit={handleSubmit} className="register-form">

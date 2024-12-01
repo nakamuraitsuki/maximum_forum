@@ -1,6 +1,8 @@
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
+import { MdClear } from "react-icons/md";
+import { MdSearch } from "react-icons/md";
 
 function Home() {
   const [threadName, setThreadName] = useState("");
@@ -83,7 +85,7 @@ function Home() {
         body: JSON.stringify({ name: threadName }),
       });
       //スレッド条件に達している場合
-      if(response .status === 403) {
+      if (response.status === 403) {
         console.error("スレッドの上限に達しました。");
         //TODO:上限を迎えていてなおスレッドの作成をした際の表示
         return;
@@ -158,6 +160,7 @@ function Home() {
   return (
     <div className="home">
       <h1>Maximum掲示板</h1>
+      <img src="/images/maximum-logo.png" alt="maximum-logo" className="logo" />
       {loggedInUser.id && <p>{loggedInUser.name} さん、こんにちは！</p>}
       <nav className="home-nav">
         <Link to="/register">新規登録</Link>
@@ -167,37 +170,7 @@ function Home() {
           <Link to="/login">ログイン</Link>
         )}
       </nav>
-      <div className="thread-filter">
-        <form onSubmit={handleSearch}>
-          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
-          <button type="submit">検索</button>
-          <button type="button" onClick={handleReset}>
-            リセット
-          </button>
-        </form>
-      </div>
-      {filteredThreads.length === 0 ? (
-        <p>スレッドがありません</p>
-      ) : (
-        <div className="threads">
-          {filteredThreads.map((thread) => (
-            <div key={thread.id}>
-              <Link to={`/thread/${thread.id}`}>
-                <span>
-                  {thread.name} {new Date(thread.created_at).toLocaleString()}
-                </span>
-              </Link>
-              {loggedInUser.id == String(thread.owner_id) && (
-                <button type="button" onClick={() => deleteThread(thread.id)}>
-                  削除
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
-      <form onSubmit={handleSubmit} className="comment-form">
+      <form onSubmit={handleSubmit} className="create-thread-form">
         <input
           value={threadName}
           onChange={(e) => setThreadName(e.target.value)}
@@ -206,6 +179,42 @@ function Home() {
         ></input>
         <button type="submit">作成</button>
       </form>
+      <div className="thread-filter">
+        <form onSubmit={handleSearch}>
+          <input type="text" placeholder="スレッド検索" ref={searchInputRef} />
+          <button type="button" onClick={handleReset}>
+            <MdClear />
+          </button>
+          <button type="submit" className="submit">
+            <MdSearch />
+          </button>
+        </form>
+      </div>
+      {filteredThreads.length === 0 ? (
+        <p>スレッドがありません</p>
+      ) : (
+        <div className="thread-list">
+          {filteredThreads.map((thread) => (
+            <div key={thread.id} className="thread">
+              <Link to={`/thread/${thread.id}`}>
+                <span>
+                  {thread.name} {new Date(thread.created_at).toLocaleString()}
+                </span>
+              </Link>
+              {loggedInUser.id == String(thread.owner_id) && (
+                <button
+                  type="button"
+                  onClick={() => deleteThread(thread.id)}
+                  className="delete-button"
+                >
+                  削除
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      <div>{isLimitReached && <p>スレッド数の上限に達しています</p>}</div>
     </div>
   );
 }

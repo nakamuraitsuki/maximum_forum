@@ -42,10 +42,10 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
+    <div className="login">
       <h1>ログイン</h1>
       <nav className="login-nav">
-        <Link to="/">Home</Link>
+        <Link to="/">スレッド一覧</Link>
         <Link to="/register">新規登録</Link>
       </nav>
       <form onSubmit={handleSubmit} className="login-form">

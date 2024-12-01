@@ -159,12 +159,12 @@ function Thread() {
       {loggedInUser && <span>{loggedInUser} さん、こんにちは！</span>}
       <div>
         <form onSubmit={handleSubmit} className="comment-form">
-          <input
+          <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="コメントを入力してください"
             required
-            ></input>
+            ></textarea>
           <button type="submit">投稿</button>
         </form>
         <p>コメント数:{commentCount.commentCount}/{commentCount.maxComment}</p>

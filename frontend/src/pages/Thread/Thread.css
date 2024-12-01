@@ -5,6 +5,20 @@
   border-radius: 8px;
 }
 
+.navigation {
+  margin: 1rem 0;
+  a {
+    text-decoration: none;
+    color: #1a73e8;
+    margin: 0 0.5rem;
+    font-weight: 500;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
 .thread-title {
   text-align: center;
   font-size: 1.5rem;
@@ -13,20 +27,37 @@
   border-bottom: 1px solid #ddd;
 }
 
-.navigation {
-  margin-bottom: 1.5rem;
-}
-
 .comment-form {
   align-items: center;
-  input {
-    padding: 8px 10px;
+  display: grid;
+  margin-bottom: 1rem;
+
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #63c178;
     border: none;
-    border-radius: 25px;
-    background: #f7f7f7;
-    color: #333;
-    font-size: 1em;
-    line-height: 1.5;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0.5rem 0;
+  }
+
+  button:hover {
+    background-color: #4e9f5b;
   }
 }
 
