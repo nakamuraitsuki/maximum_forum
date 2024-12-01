@@ -57,7 +57,7 @@ const (
 	//コメント数上限
 	maxComments = 1000
 	//ページネーション表示件数
-	pagenation 	= 5
+	pagination 	= 5
 )
 
 var jwtKey = []byte("secret_key")    // Replace with a secure key
@@ -431,7 +431,7 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	
 	var threads []Thread
-	rows, err := db.Query("SELECT * FROM threads LIMIT ? OFFSET ?", pagenation, (page-1)*pagenation)
+	rows, err := db.Query("SELECT * FROM threads LIMIT ? OFFSET ?", pagination, (page-1)*pagination)
 	if err != nil {
 		responseJSON(w, http.StatusInternalServerError, "Failed to get threads")	
 		return
@@ -451,7 +451,7 @@ func getThreads(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//上限に達しているか否かを保持
 	isLimitReached := threadCount >= maxThread
 	//ページ数を保持(繰り上げ)
-	pageCount := (threadCount+pagenation-1)/pagenation
+	pageCount := (threadCount+pagination-1)/pagination
 	//コメント配列と上限に達しているかどうかをまとめる
 	response := ThreadResponse{
 		Threads: threads,
