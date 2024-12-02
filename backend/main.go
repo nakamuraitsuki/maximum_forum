@@ -34,6 +34,9 @@ const (
 			owner_id TEXT NOT NULL
 		)
 	`
+	createThreadTableIndex = `
+		CREATE INDEX IF NOT EXISTS idx_threads_created_at ON threads(created_at);
+	`
 	createCommentTable = `
 		CREATE TABLE IF NOT EXISTS comments(
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +45,9 @@ const (
 			message TEXT NOT NULL,
 			created_at TEXT NOT NULL
 		)
+	`
+	createCommentTableIndex = `
+		CREATE INDEX IF NOT EXISTS idx_thread_id_created_at ON comments(thread_id, created_at)
 	`
 
 	addUser          = "INSERT INTO users (name, pw_hash) VALUES (?, ?)"
@@ -133,12 +139,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	//スレッドテーブルにインデックス作成
+	_, err = db.Exec(createThreadTableIndex)
+	if err != nil {
+		panic(err)
+	}
 	_, err = db.Exec(createCommentTable)
 	if err != nil {
 		panic(err)
 	}
-
+	//コメントテーブルにインデックス作成
+	_, err = db.Exec(createCommentTableIndex)
+	if err != nil {
+		panic(err)
+	}
 	http.HandleFunc("/api/users", HandleCORS(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
